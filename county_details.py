@@ -57,7 +57,7 @@ def build_page_content(fips_code: int):
     county_only_df = df[df['FIPS']==int(fips_code)]
 
     if len(county_only_df) == 1:
-        st.title(f"Get data for {county_only_df.NAME.values[0]}")
+        st.title(f"{county_only_df.NAME.values[0]}")
 
         st.write(county_only_df)
 
@@ -164,6 +164,8 @@ def build_page_content(fips_code: int):
 ################################
 # page start             
 ################################
+
+
 
 url_params = st.experimental_get_query_params()
 
