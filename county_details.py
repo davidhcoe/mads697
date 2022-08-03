@@ -61,7 +61,9 @@ def build_page_content(fips_code: int):
 
         st.write(county_only_df)
 
-        st.write('Race')
+        st.write(f'''
+                #### Racial Mix         
+            ''')
 
         categories = ['white','black','native_american','asian','hawaiian',	'some_other_race_alone','two_more_races','hispanic_or_latino']
 
