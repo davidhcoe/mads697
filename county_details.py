@@ -137,7 +137,7 @@ def build_page_content(fips_code: int):
                 #### Housing    
             ''')
             
-            get_metric("Homeless Students","HOM_STUDENTS", county_only_df, averages, 'inverse')
+            get_metric("Homeless Students","HOM_STUDENTS", county_only_df, averages, delta_color='inverse')
             get_metric("Proportion homeless","proportion_homeless", county_only_df, averages, '{:.0%}', 'inverse')
             
         col1, col2 = st.columns(2)
