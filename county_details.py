@@ -241,7 +241,9 @@ else:
     def get_map(metric):
         counties = alt.topo_feature('https://cdn.jsdelivr.net/npm/vega-datasets@v1.29.0/data/us-10m.json', 'counties')
 
-        c = alt.Chart(counties).mark_geoshape().encode(
+        c = alt.Chart(counties).mark_geoshape(
+            stroke='#706545', strokeWidth=0.5
+        ).encode(
             color=metric+':Q',
             tooltip=['NAME:N', 'url:N'],
             href='url:N'
@@ -254,8 +256,8 @@ else:
         ).project(
             type='albersUsa'
         ).properties(
-            width=500,
-            height=300
+            width=900,
+            height=500
         )
 
         return c
@@ -269,4 +271,8 @@ else:
     #    metric = url_params[metric_param][0]
 
     c = get_map(metric)
+    
+    st.title("United States Metrics")
+    st.write(f'for **{metric}**. Select county for details.')
+    
     st.altair_chart(c)
