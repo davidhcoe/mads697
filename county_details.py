@@ -208,8 +208,6 @@ else:
     import streamlit as st
     import pandas as pd
     import altair as alt
-    from vega_datasets import data
-
     def get_url(row):
         row['url'] = 'http://localhost:8501/?fips=' + str(row['id'])
 
@@ -222,8 +220,7 @@ else:
     county_display_df = county_display_df.apply(get_url, axis=1)
 
     def get_map(metric):
-        counties = alt.topo_feature(data.us_10m.url, 'counties')
-        source = data.unemployment.url
+        counties = alt.topo_feature('https://cdn.jsdelivr.net/npm/vega-datasets@v1.29.0/data/us-10m.json', 'counties')
 
         c = alt.Chart(counties).mark_geoshape().encode(
             color=metric+':Q',
@@ -244,7 +241,11 @@ else:
 
         return c
 
-    metric = url_params['metric'][0]
+    metric = 'population'
+    metric_param = 'metric'
+    
+    if metric_param in url_params and len(url_params[metric_param][0])>0:
+        metric = url_params[metric_param][0]
 
     c = get_map(metric)
     st.altair_chart(c)
