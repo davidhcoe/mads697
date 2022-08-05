@@ -1,3 +1,4 @@
+from email.policy import default
 from typing import Any, Dict
 import streamlit as st
 import pandas as pd 
@@ -189,7 +190,15 @@ def build_page_content(fips_code: int):
 # </nav>
 # """, unsafe_allow_html=True)
 
+def get_parameter(name, default_value):
+    url_params = st.experimental_get_query_params()
 
+    param_value = default_value
+
+    if name in url_params and len(url_params[name][0])>0:
+        param_value = url_params[name][0]
+
+    return param_value
 
 url_params = st.experimental_get_query_params()
 
@@ -208,8 +217,18 @@ else:
     import streamlit as st
     import pandas as pd
     import altair as alt
+
+    url = ''
+    
+    debug = get_parameter('debug','false')
+
+    if debug =='true':
+         url = 'http://localhost:8501/?fips='
+    else:
+         url = 'http://upwardmobility.pythonanywhere.com/county_details?fips='
+
     def get_url(row):
-        row['url'] = 'http://localhost:8501/?fips=' + str(row['id'])
+        row['url'] = url + str(row['id'])
 
         return row
 
@@ -241,11 +260,13 @@ else:
 
         return c
 
-    metric = 'population'
-    metric_param = 'metric'
+    # metric = 'population'
+    # metric_param = 'metric'
     
-    if metric_param in url_params and len(url_params[metric_param][0])>0:
-        metric = url_params[metric_param][0]
+    metric = get_parameter('metric','population')
+
+    #if metric_param in url_params and len(url_params[metric_param][0])>0:
+    #    metric = url_params[metric_param][0]
 
     c = get_map(metric)
     st.altair_chart(c)
