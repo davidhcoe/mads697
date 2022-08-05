@@ -246,7 +246,7 @@ else:
             stroke='#706545', strokeWidth=0.5
         ).encode(
             color=metric+':Q',
-            tooltip=['NAME:N', 'url:N'],
+            tooltip=['NAME:N'],
             href='url:N'
         ).transform_lookup(
             lookup='id',
