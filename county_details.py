@@ -273,7 +273,4 @@ else:
 
     c = get_map(metric)
     
-    st.title("United States Metrics")
-    st.write(f'for **{metric}**. Select county for details.')
-    
     st.altair_chart(c)
