@@ -225,7 +225,8 @@ else:
     if debug =='true':
          url = 'http://localhost:8501/?fips='
     else:
-         url = 'https://upwardmobility.pythonanywhere.com/county-details?fips='
+         #url = 'https://upwardmobility.pythonanywhere.com/county-details?fips='
+         url = 'https://davidhcoe-mads697-county-details-pr63wa.streamlitapp.com/?fips='
 
     def get_url(row):
         row['url'] = url + str(row['id'])
