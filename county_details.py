@@ -52,8 +52,6 @@ def build_page_content(fips_code: int):
 
     df, averages = get_dataframe()
 
-    print(averages)
-
     county_only_df = df[df['FIPS']==int(fips_code)]
 
     if len(county_only_df) == 1:
@@ -167,6 +165,30 @@ def build_page_content(fips_code: int):
 # page start             
 ################################
 
+# st.write('<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">', unsafe_allow_html=True)
+
+# st.write("""
+# <nav class="navbar fixed-top navbar-expand-lg navbar-dark" style="background-color: #3498DB;">
+#   <a class="navbar-brand" href="https://youtube.com/dataprofessor" target="_blank">Data Professor</a>
+#   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+#     <span class="navbar-toggler-icon"></span>
+#   </button>
+#   <div class="collapse navbar-collapse" id="navbarNav">
+#     <ul class="navbar-nav">
+#       <li class="nav-item active">
+#         <a class="nav-link disabled" href="#">Home <span class="sr-only">(current)</span></a>
+#       </li>
+#       <li class="nav-item">
+#         <a class="nav-link" href="https://youtube.com/dataprofessor" target="_blank">YouTube</a>
+#       </li>
+#       <li class="nav-item">
+#         <a class="nav-link" href="https://twitter.com/thedataprof" target="_blank">Twitter</a>
+#       </li>
+#     </ul>
+#   </div>
+# </nav>
+# """, unsafe_allow_html=True)
+
 
 
 url_params = st.experimental_get_query_params()
@@ -179,9 +201,50 @@ if fips_parameter in url_params:
     fips_code = url_params[fips_parameter][0]
     
     if len(fips_code) > 0 and fips_code.isnumeric():
-       print(fips_code)
        build_page_content(fips_code)
     else:
         st.title(f"Cant find any data for {fips_code}")
 else:
-    st.title("Upward Mobility Explorer")
+    import streamlit as st
+    import pandas as pd
+    import altair as alt
+    from vega_datasets import data
+
+    def get_url(row):
+        row['url'] = 'http://localhost:8501/?fips=' + str(row['id'])
+
+        return row
+
+    counties_df = pd.read_csv('counties_merged.csv')
+    county_display_df = counties_df[['NAME','FIPS']]
+    county_display_df.columns = ['NAME','id']
+    county_display_df['url'] = ''
+    county_display_df = county_display_df.apply(get_url, axis=1)
+
+    def get_map(metric):
+        counties = alt.topo_feature(data.us_10m.url, 'counties')
+        source = data.unemployment.url
+
+        c = alt.Chart(counties).mark_geoshape().encode(
+            color=metric+':Q',
+            tooltip=['NAME:N', 'url:N'],
+            href='url:N'
+        ).transform_lookup(
+            lookup='id',
+            from_=alt.LookupData(county_display_df, 'id', ['NAME', 'url'])
+        ).transform_lookup(
+            lookup='id',
+            from_=alt.LookupData(counties_df, 'FIPS', [metric])
+        ).project(
+            type='albersUsa'
+        ).properties(
+            width=500,
+            height=300
+        )
+
+        return c
+
+    metric = url_params['metric'][0]
+
+    c = get_map(metric)
+    st.altair_chart(c)
