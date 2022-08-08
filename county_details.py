@@ -1,9 +1,14 @@
-from email.policy import default
+import numpy as np
 from typing import Any, Dict
 import streamlit as st
+import matplotlib.pyplot as plt
+import seaborn as sns
 import pandas as pd 
 import altair as alt
-import queries
+import plotly.express as px
+
+import matplotlib.style as style
+style.use('fivethirtyeight')
 
 @st.cache(suppress_st_warning=True)
 def get_dataframe():
@@ -33,9 +38,16 @@ def get_metric(name: str, col_name: str,county_df: pd.DataFrame, averages:Dict[s
         value = float(value)
         delta = round(value/averages[col_name], 1)
     
+    if np.isnan(value):
+        return st.metric(name,
+            value = 'n/a',
+            delta='No data available',
+            delta_color='off' 
+        )
+
     if format_pattern is not None:
         value = format_pattern.format(value)
-
+    
     if delta is not None:
         delta_str = f'{delta}% from national average'
 
@@ -50,7 +62,6 @@ def get_metric(name: str, col_name: str,county_df: pd.DataFrame, averages:Dict[s
         )
 
 def build_page_content(fips_code: int):
-
     df, averages = get_dataframe()
 
     county_only_df = df[df['FIPS']==int(fips_code)]
@@ -58,137 +69,177 @@ def build_page_content(fips_code: int):
     if len(county_only_df) == 1:
         st.title(f"{county_only_df.NAME.values[0]}")
 
-        st.write(county_only_df)
+        st.markdown('<a href="#population">Population</a> | <a href="#strong-and-healthy-families">Strong and Healthy Families</a>', unsafe_allow_html=True)
 
-        st.write(f'''
-                #### Racial Mix         
-            ''')
+        #############################
+        # Population
+        #############################
 
+        
+        st.header("Population")
+
+        col1, col2 = st.columns(2)
+    
+        st.metric("2019 Population",value = '{:,}'.format(int(county_only_df["population"].values[0])))
+            
         categories = ['white','black','native_american','asian','hawaiian',	'some_other_race_alone','two_more_races','hispanic_or_latino']
+
+        categories_names = {'white': 'White',
+            'black': 'Black',
+            'native_american': 'Native American',
+            'asian': 'Asian',
+            'hawaiian': 'Hawaiian',	
+            'some_other_race_alone': 'Other',
+            'two_more_races': 'Two or more races',
+            'hispanic_or_latino': 'Hispanic/Latino'
+            }
 
         values = []
 
-        value_texts = []
-
+        category_labels = []
+        
         for c in categories:
             value = county_only_df[c].values[0]
+            category_labels.append(categories_names[c])
             values.append(value)
-            value_texts.append('{:.0%}'.format(value))
-
-        chart_df = pd.DataFrame({"race": categories, "value": values, "labels": value_texts})
-
-        base = alt.Chart(chart_df).encode(
-            theta=alt.Theta(field="value", type="quantitative"),
-            color=alt.Color(field="race", type="nominal"),
+            
+        chart_df = pd.DataFrame({"race": category_labels, "value": values}) #, "labels": value_texts})
+     
+        fig = px.pie(
+            chart_df, values="value", names='race',
+            color_discrete_sequence=px.colors.sequential.Blues_r
         )
-
-        pie = base.mark_arc(outerRadius=120)
-        text = base.mark_text(radius=140, size=20,color='black').encode(text="labels:N")
-
-        c = pie + text
-
-        st.altair_chart(c)
-
-        domain_cols_corr = {
-            "Financial wellbeing": ["median_family_income", "income_20_percentile", "income_80_percentile"],
-            "Education": ['preschool_enroll','avg_edu_prof_diff'],
-            
-                "Neighborhoods":['proportion_high_poverty_neighborhood','transit_trips_index','transit_low_cost_index'],
-                "Housing": ["HOM_STUDENTS","proportion_homeless"],
-                
-                "Health": ['low_birth_rate','HPSA Score'],
-                "Safety": ["crime_rate"],
-                
-                "Local governance": ["proportion_voter"]
-            }
-
-           
-        col1, col2 = st.columns(2)
+        #fig.update_layout(margin=dict(t=0, b=0, l=0, r=0))            
+        fig.update_traces(hovertemplate='<b>%{label}</b>') #
         
-        with col1:
-            st.write(f'''
-                #### Financial Wellbeing         
-            ''')
+        st.plotly_chart(fig)#,use_container_width=False)
 
-            get_metric("Median Family Income", "median_family_income", county_only_df, averages, '${0:,.0f}')
-            get_metric("Income 20%", "income_20_percentile",  county_only_df, averages, '${0:,.0f}')
-            get_metric("Income 80%", "income_80_percentile",  county_only_df, averages, '${0:,.0f}')
+        #############################
+        # Strong and Healthy Families
+        #############################
+
+        st.header('Strong and Healthy Families')
+
+        fin_being, housing, health = st.tabs(['Financial Wellbeing','Housing','Health'])
+
+        with fin_being:
             
-        with col2:
-            st.write(f'''
-                #### Education    
-            ''')
+            col1, col2 = st.columns([1.5,2.5])
+            
+            with col1:
+                
+                st.subheader('Income')
+            
+                get_metric("Median Family Income", "median_family_income", county_only_df, averages, '${0:,.0f}')
+                get_metric("Income 20%", "income_20_percentile",  county_only_df, averages, '${0:,.0f}')
+                get_metric("Income 80%", "income_80_percentile",  county_only_df, averages, '${0:,.0f}')
+            
+            with col2:
+                
+                categories = ['median_family_income_white','median_family_income_black','median_family_income_indigenous','median_family_income_asian','median_family_income_hispanic']
 
-            get_metric("Preschool enrollment","preschool_enroll", county_only_df, averages, '{:.0%}')
-            get_metric("Avg Edu Prof Diff", "avg_edu_prof_diff", county_only_df, averages)
+                category_names = {'median_family_income_white': 'White',
+                    'median_family_income_black': 'Black',
+                    'median_family_income_indigenous': 'Native American',
+                    'median_family_income_asian': 'Asian',
+                    'median_family_income_hispanic': 'Hispanic/Latino'
+                    }
 
-        col1, col2 = st.columns(2)
+                labels = []
+                values = []
+
+                for c in categories:
+                    value = county_only_df[c].values[0]
+                    labels.append(category_names[c])
+                    values.append(value)
+                    
+                chart_df = pd.DataFrame({"race": labels, "value": values})         
+
+                fig = px.bar(chart_df, x='race', y='value',color_discrete_sequence=px.colors.sequential.Blues_r)
+
+                st.plotly_chart(fig,use_container_width=False)
+
+            with st.expander("Source details"):
+                st.write('Description: Household income at 20th, 50th, and 80th percentiles')
+                st.write('Source: ACS 5-year data')
+
+        with housing:
+                 
+            st.subheader('Housing instability and homelessness')
+
+            get_metric("Proportion Homeless Students","proportion_homeless", county_only_df, averages, '{:.0%}', 'inverse')
         
-        with col1:
-            st.write(f'''
-                #### Neighborhoods    
-            ''')
+            with st.expander("Source details"):
+                st.write('Description: Portion of public-school children who are ever homeless during the school year')
+                st.markdown('Source: <a href="https://www2.ed.gov/about/inits/ed/edfacts/data-files/school-status-data.html">US Department of Education</a>',unsafe_allow_html=True)
+                st.write("Notes: See appendix")
+                
+        with health:
+                 
+            st.subheader('Access to and utilization of health services')
 
-            get_metric("Proportion High Poverty","proportion_high_poverty_neighborhood", county_only_df, averages, '{:.0%}', 'inverse')
-            get_metric("Transit Trips", "transit_trips_index", county_only_df, averages)
-            get_metric("Low Cost Transit", "transit_low_cost_index", county_only_df, averages)
+            get_metric("HPSA Score","HPSA Score", county_only_df, averages, delta_color='inverse')
+        
+            with st.expander("Source details"):
+                st.write('Health Professional Shortage Area ranking for primary care providers')
+                st.markdown('Source: <a href="https://data.hrsa.gov/data/download">Health Resources & Services Administration</a>',unsafe_allow_html=True)
+
+
+        # with col2:
+        #     st.write(f'''
+        #         #### Education    
+        #     ''')
+
+        #     get_metric("Preschool enrollment","preschool_enroll", county_only_df, averages, '{:.0%}')
+        #     get_metric("Avg Edu Prof Diff", "avg_edu_prof_diff", county_only_df, averages)
+
+        # col1, col2 = st.columns(2)
+        
+        # with col1:
+        #     st.write(f'''
+        #         #### Neighborhoods    
+        #     ''')
+
+        #     get_metric("Proportion High Poverty","proportion_high_poverty_neighborhood", county_only_df, averages, '{:.0%}', 'inverse')
+        #     get_metric("Transit Trips", "transit_trips_index", county_only_df, averages)
+        #     get_metric("Low Cost Transit", "transit_low_cost_index", county_only_df, averages)
        
-        with col2:
-            st.write(f'''
-                #### Housing    
-            ''')
+        # with col2:
+        #     st.write(f'''
+        #         #### Housing    
+        #     ''')
             
-            get_metric("Homeless Students","HOM_STUDENTS", county_only_df, averages, delta_color='inverse')
-            get_metric("Proportion homeless","proportion_homeless", county_only_df, averages, '{:.0%}', 'inverse')
+        #     get_metric("Homeless Students","HOM_STUDENTS", county_only_df, averages, format_pattern='{:,.2f}', delta_color='inverse')
+        #     get_metric("Proportion homeless","proportion_homeless", county_only_df, averages, '{:.0%}', 'inverse')
             
-        col1, col2 = st.columns(2)
+        # col1, col2 = st.columns(2)
         
-        with col1:
-            st.write(f'''
-                #### Health    
-            ''')
+        # with col1:
+        #     st.write(f'''
+        #         #### Health    
+        #     ''')
 
-            st.metric("Low Birth Rate",
-                    value = '{:.0%}'.format(county_only_df["low_birth_rate"].values[0]))
+        #     get_metric("Low Birth Rate","low_birth_rate", county_only_df, averages, format_pattern='{:.0%}', delta_color='inverse')
+        #     # st.metric("Low Birth Rate",
+        #     #         value = '{:.0%}'.format(county_only_df["low_birth_rate"].values[0]))
 
-            st.metric("HPSA Score",
-                    value = county_only_df["HPSA Score"].values[0])
+        #     get_metric("HPSA Score","HPSA Score", county_only_df, averages)
 
-        with col2:
+        #     # st.metric("HPSA Score", "HPSA Score", county_only_df, averages)
+        #     #         value = county_only_df["HPSA Score"].values[0])
+
+        # with col2:
             st.write(f'''
                 #### Crime    
+                per 100k residents
             ''')
 
-            st.metric("Violent Crime Rate",
-                    value = county_only_df["low_birth_rate"].values[0])
+            get_metric("Violent Crime Rate","crime_rate", county_only_df, averages, format_pattern='{:,.2f}', delta_color='inverse')
+            
 
 ################################
 # page start             
 ################################
-
-# st.write('<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">', unsafe_allow_html=True)
-
-# st.write("""
-# <nav class="navbar fixed-top navbar-expand-lg navbar-dark" style="background-color: #3498DB;">
-#   <a class="navbar-brand" href="https://youtube.com/dataprofessor" target="_blank">Data Professor</a>
-#   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-#     <span class="navbar-toggler-icon"></span>
-#   </button>
-#   <div class="collapse navbar-collapse" id="navbarNav">
-#     <ul class="navbar-nav">
-#       <li class="nav-item active">
-#         <a class="nav-link disabled" href="#">Home <span class="sr-only">(current)</span></a>
-#       </li>
-#       <li class="nav-item">
-#         <a class="nav-link" href="https://youtube.com/dataprofessor" target="_blank">YouTube</a>
-#       </li>
-#       <li class="nav-item">
-#         <a class="nav-link" href="https://twitter.com/thedataprof" target="_blank">Twitter</a>
-#       </li>
-#     </ul>
-#   </div>
-# </nav>
-# """, unsafe_allow_html=True)
 
 def get_parameter(name, default_value):
     url_params = st.experimental_get_query_params()
@@ -263,13 +314,7 @@ else:
 
         return c
 
-    # metric = 'population'
-    # metric_param = 'metric'
-    
     metric = get_parameter('metric','population')
-
-    #if metric_param in url_params and len(url_params[metric_param][0])>0:
-    #    metric = url_params[metric_param][0]
 
     c = get_map(metric)
     
