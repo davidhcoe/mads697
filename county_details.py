@@ -8,7 +8,7 @@ import plotly.express as px
 import matplotlib.style as style
 style.use('fivethirtyeight')
 
-@st.cache(suppress_st_warning=True)
+#@st.cache(suppress_st_warning=True)
 def get_dataframe():
     df = pd.read_csv('counties_merged.csv')
 
@@ -18,7 +18,7 @@ def get_dataframe():
                  'white_employed_16_64', 'black_employed_16_64',  'american_indian_employed_16_64', 'asian_employed_16_64', 'some_other_race_alone_employed_16_64',
                  'two_or_more_race_employed_16_64', 'hispanic_or_latino_employed_16_64', 'employed_25_54_population', 'employed_16_64_population',
                  'median_family_income','income_20_percentile','income_80_percentile','median_family_income_white','median_family_income_black',
-                 'median_family_income_indigenous','median_family_income_asian','median_family_income_hispanic',
+                 'median_family_income_indigenous','median_family_income_asian','median_family_income_hispanic', 'all_in_poverty','juvenile_crime_rate',
                  'some_other_race_under_5','two_or_more_race_under_5', 'preschool_enrollment_white','preschool_enrollment_black','preschool_enrollment_hispanic','preschool_enrollment_indigenous','preschool_enrollment_asian','year','public_students_pre_12','white_employed_16_64','black_employed_16_64','american_indian_employed_16_64','asian_employed_16_64','some_other_race_alone_employed_16_64','two_or_more_race_employed_16_64','hispanic_or_latino_employed_16_64','employed_25_54_population','employed_16_64_population','preschool_enroll','white_under_5','black_under_5','indigenous_under_5','asian_under_5','hispanic_under_5','avg_edu_prof_diff','low_birth_rate','Not Hispanic or Latino_low_birth_rate','Hispanic or Latino_low_birth_rate','Unknown or Not Stated_low_birth_rate','Black or African American_low_birth_rate','White_low_birth_rate','Asian_low_birth_rate','More than one race_low_birth_rate','American Indian or Alaska Native_low_birth_rate','Native Hawaiian or Other Pacific Islander_low_birth_rate','HPSA Score','HOM_STUDENTS','proportion_homeless','proportion_voter','proportion_high_poverty_neighborhood','transit_trips_index','transit_low_cost_index','crime_rate']
 
     for f in feature_names:
@@ -67,13 +67,13 @@ def build_page_content(fips_code: int):
     if len(county_only_df) == 1:
         st.title(f"{county_only_df.NAME.values[0]}")
 
-        st.markdown('<a href="#population">Population</a> | <a href="#strong-and-healthy-families">Strong and Healthy Families</a> | <a href="#supportive-communities">Supportive Communities</a>', unsafe_allow_html=True)
+        st.markdown('<a href="#population">Population</a> | <a href="#strong-and-healthy-families">Strong and Healthy Families</a> | <a href="#supportive-communities">Supportive Communities</a> | <a href="#opportunities-to-learn-and-earn">Opportunities to Learn and Earn</a>', unsafe_allow_html=True)
 
         #############################
         # Population
         #############################
         
-        col1, col2 = st.columns([.75,3.25])
+        col1, col2 = st.columns([1,3])
         
         with col1:
            st.markdown('##### Population')
@@ -98,8 +98,9 @@ def build_page_content(fips_code: int):
             
             for c in categories:
                 value = county_only_df[c].values[0]
-                category_labels.append(categories_names[c])
-                values.append(value)
+                if value > 0:
+                    category_labels.append(categories_names[c])
+                    values.append(value)
                 
             chart_df = pd.DataFrame({"race": category_labels, "value": values}) #, "labels": value_texts})
         
@@ -141,7 +142,7 @@ def build_page_content(fips_code: int):
             
             with col1:
                 
-                st.subheader('Income')
+                st.markdown('##### Income')
             
                 get_metric("Income 20%", "income_20_percentile",  county_only_df, averages, '${0:,.0f}')
                 get_metric("Median Family Income", "median_family_income", county_only_df, averages, '${0:,.0f}')
@@ -163,8 +164,9 @@ def build_page_content(fips_code: int):
 
                 for c in categories:
                     value = county_only_df[c].values[0]
-                    labels.append(category_names[c])
-                    values.append(value)
+                    if value > 0:
+                        labels.append(category_names[c])
+                        values.append(value)
                     
                 chart_df = pd.DataFrame({"race": labels, "value": values})         
 
@@ -199,7 +201,7 @@ def build_page_content(fips_code: int):
 
             with col1:
                 st.markdown('##### Access to and utilization of health services')
-                get_metric("HPSA Score","HPSA Score", county_only_df, averages, delta_color='inverse')
+                get_metric("HPSA Score","HPSA Score", county_only_df, averages, '{:.2f}', delta_color='inverse')
 
                 st.markdown('##### Neonatal Health')
                 get_metric("Low Birth Rate","low_birth_rate", county_only_df, averages, '{:.0%}',delta_color='inverse')
@@ -232,7 +234,7 @@ def build_page_content(fips_code: int):
 
                 fig = px.bar(chart_df, x='race', y='value',
                     color_discrete_sequence=px.colors.sequential.Blues_r,
-                    title='Birth Rate by Race/Ethnicity',
+                    title='Low Birth Rate by Race/Ethnicity',
                     labels=dict(race="", value="")
                     )
 
@@ -269,21 +271,34 @@ def build_page_content(fips_code: int):
             
             with col1:
                 
-                st.subheader('Economic inclusion')
+                st.markdown('##### Economic inclusion')
             
-                #get_metric("People in Poverty", "all_in_poverty",  county_only_df, averages, '${0:,}')
-          
+                st.metric("People in Poverty", 
+                    value = '{:,}'.format(int(county_only_df["all_in_poverty"].values[0])), 
+                    delta_color='inverse'
+                )
+
+                
+                get_metric("Proportion high poverty neighborhood", "proportion_high_poverty_neighborhood", county_only_df, averages, '{0:.0%}', delta_color='inverse')
+
+                st.markdown('##### Transportation Access')
+
+                get_metric("Transit Trips Index", "transit_trips_index", county_only_df, averages, '{0:.2f}')
+                get_metric("Transit Trips Cost", "transit_low_cost_index", county_only_df, averages, '{0:.2f}')
             
             with col2:
                 
-                categories = ['median_family_income_white','median_family_income_black','median_family_income_indigenous','median_family_income_asian','median_family_income_hispanic']
+                categories = ['hispanic_or_latino_exposure','white_exposure','black_exposure','native_american_exposure','asian_exposure','hawaiian_exposure','some_other_race_alone_exposure','two_more_races_exposure']
 
-                category_names = {'median_family_income_white': 'White',
-                    'median_family_income_black': 'Black',
-                    'median_family_income_indigenous': 'Native American',
-                    'median_family_income_asian': 'Asian',
-                    'median_family_income_hispanic': 'Hispanic/Latino'
-                    }
+                category_names = {'white_exposure': 'White',
+                    'black_exposure': 'Black',
+                    'native_american_exposure': 'Native American',
+                    'asian_exposure': 'Asian',
+                    'hispanic_or_latino_exposure': 'Hispanic/Latino',
+                    'hawaiian_exposure': 'Hawaiian',
+                    'some_other_race_alone_exposure': 'Other race',
+                    'two_more_races_exposure': 'Two or more races'
+                }
 
                 labels = []
                 values = []
@@ -298,7 +313,7 @@ def build_page_content(fips_code: int):
                 fig = px.bar(chart_df, 
                     x='race', 
                     y='value',
-                    title='Median Income by Race/Ethnicity',
+                    title='Racial Exposure Index',
                     color_discrete_sequence=px.colors.sequential.Blues_r,
                     labels=dict(race="", value="")
                 )
@@ -306,32 +321,69 @@ def build_page_content(fips_code: int):
                 st.plotly_chart(fig,use_container_width=False)
 
             with st.expander("Source details"):
-                st.write('Description: Household income at 20th, 50th, and 80th percentiles')
-                st.write('Source: ACS 5-year data')
+                st.markdown('*People in Poverty*<br>'\
+                    'Description: Share of residents experiencing poverty living in high-poverty neighborhoods<br>' \
+                    'Source: ACS 5-year data',unsafe_allow_html=True)
+
+                st.markdown('*Racial Diversity*<br>' \
+                    'Description: Neighborhood exposure index, or share of a person’s neighbors who are people of other races and ethnicities<br>' \
+                    'Source: ACS 5-year data<br>' \
+                    'Notes: Used the <a href="https://censusscope.org/about_exposure.html">Census Scope</a> Exposure Index Formula to calculate the exposure index for each race at the tract level.',unsafe_allow_html=True)
                 
+                st.markdown('*Transportation access*<br>' \
+                    'Description: Transit trips index<br>' \
+                    'Source: Department of Housing and Urban Development Accessed via <a href="https://hudgis-hud.opendata.arcgis.com/datasets/location-affordability-index-v-3/api">API</a><br>' \
+                    'Assumptions: Converted the index (hh6_transit_trips_renters)  given to percentile ranked nationally<br>' \
+                    'Interpretation: Higher scores reflect better access to public transportation.',  unsafe_allow_html=True)
+
+
         with safety:
             
-            col1, col2 = st.columns([1.5,2.5])
+            col1, col2 = st.columns(2)
 
             with col1:
-                st.markdown('##### Access to and utilization of health services')
-                get_metric("HPSA Score","HPSA Score", county_only_df, averages, delta_color='inverse')
+                st.markdown('##### Exposure to crime')
+                get_metric("Violent crime","crime_rate", county_only_df, averages, '{0:.2f}', delta_color='inverse')
+                st.markdown('*per 100k residents*')
+           
+            with col2:
+                st.markdown('##### Overly punitive policing')
+                get_metric("Juvenile Crime Rate","juvenile_crime_rate", county_only_df, averages, '{0:.2f}', delta_color='inverse')
+                st.markdown('*per 100k residents*')
 
-                st.markdown('##### Neonatal Health')
-                get_metric("Low Birth Rate","low_birth_rate", county_only_df, averages, '{:.0%}',delta_color='inverse')
+            with st.expander("Source details"):
+                st.markdown('*Exposure to crime*<br>' \
+                    'Description: Rates of reported violent crime<br>' \
+                    'Source: <a href="http://api.usa.gov/">api.usa.gov</a><br>' \
+                    'Assumptions: To calculate the rate of crime per 100k residents the ACS population data was used for each city',unsafe_allow_html=True)
+
+        #############################
+        # Opportunities to Learn and Earn
+        #############################
+
+        st.header('Opportunities to Learn and Earn')
+
+        education, work = st.tabs(['Education','Work'])
+
+        with education:
+            
+            col1, col2 = st.columns([1.5,2.5])
+            
+            with col1:
+                st.markdown('##### Access to preschool')
+                get_metric("Preschool enrollment","preschool_enroll", county_only_df, averages, '{:.0%}')
+                st.metric("PreK-12 enrollment", 
+                    value = '{:,}'.format(int(county_only_df["public_students_pre_12"].values[0]))
+                )
 
             with col2:
-                categories = ['Not Hispanic or Latino_low_birth_rate','Hispanic or Latino_low_birth_rate','Unknown or Not Stated_low_birth_rate','Black or African American_low_birth_rate','White_low_birth_rate','Asian_low_birth_rate','More than one race_low_birth_rate','American Indian or Alaska Native_low_birth_rate','Native Hawaiian or Other Pacific Islander_low_birth_rate']
+                categories = ['preschool_enrollment_white','preschool_enrollment_black','preschool_enrollment_hispanic','preschool_enrollment_indigenous','preschool_enrollment_asian']
 
-                category_names = {'White_low_birth_rate': 'White',
-                    'Black or African American_low_birth_rate': 'Black',
-                    'American Indian or Alaska Native_low_birth_rate': 'Indiginous',
-                    'Asian_low_birth_rate': 'Asian',
-                    'Hispanic or Latino_low_birth_rate': 'Hispanic/Latino',
-                    'Not Hispanic or Latino_low_birth_rate': 'Non Hispanic/Latino',
-                    'Unknown or Not Stated_low_birth_rate': 'Unknown/Not stated',
-                    'More than one race_low_birth_rate': 'More than 1 race',
-                    'Native Hawaiian or Other Pacific Islander_low_birth_rate': 'Hawaiian/Islander'
+                category_names = {'preschool_enrollment_white': 'White',
+                    'preschool_enrollment_black': 'Black',
+                    'preschool_enrollment_indigenous': 'Indigenous',
+                    'preschool_enrollment_asian': 'Asian',
+                    'preschool_enrollment_hispanic': 'Hispanic/Latino'
                 }
 
                 labels = []
@@ -339,80 +391,86 @@ def build_page_content(fips_code: int):
 
                 for c in categories:
                     value = county_only_df[c].values[0]
-
-                    if value > 0:
-                        labels.append(category_names[c])
-                        values.append(value)
+                    labels.append(category_names[c])
+                    values.append(value)
                     
                 chart_df = pd.DataFrame({"race": labels, "value": values})         
 
-                fig = px.bar(chart_df, x='race', y='value',
+                fig = px.bar(chart_df, 
+                    x='race', 
+                    y='value',
+                    title='PreK Enrollment by Race/Ethnicity',
                     color_discrete_sequence=px.colors.sequential.Blues_r,
-                    title='Birth Rate by Race/Ethnicity',
                     labels=dict(race="", value="")
-                    )
+                )
 
                 st.plotly_chart(fig,use_container_width=False)
 
             with st.expander("Source details"):
-                st.write('Health Professional Shortage Area ranking for primary care providers')
-                st.markdown('Source: <a href="https://data.hrsa.gov/data/download">Health Resources & Services Administration</a>',unsafe_allow_html=True)
-                st.write('Share of low-weight births')
-                st.markdown('Source: <a href="https://wonder.cdc.gov/natality-expanded-current.html">Center for Disease Control </a>',unsafe_allow_html=True)
+                
+                 st.markdown('*Access to preschool*<br>' \
+                    'Description: Share of children enrolled in nursery school or preschool<br>' \
+                    'Source: ACS 5-year data',  unsafe_allow_html=True)
 
+        with work:
 
-
-        # with col2:
-        #     st.write(f'''
-        #         #### Education    
-        #     ''')
-
-        #     get_metric("Preschool enrollment","preschool_enroll", county_only_df, averages, '{:.0%}')
-        #     get_metric("Avg Edu Prof Diff", "avg_edu_prof_diff", county_only_df, averages)
-
-        # col1, col2 = st.columns(2)
-        
-        # with col1:
-        #     st.write(f'''
-        #         #### Neighborhoods    
-        #     ''')
-
-        #     get_metric("Proportion High Poverty","proportion_high_poverty_neighborhood", county_only_df, averages, '{:.0%}', 'inverse')
-        #     get_metric("Transit Trips", "transit_trips_index", county_only_df, averages)
-        #     get_metric("Low Cost Transit", "transit_low_cost_index", county_only_df, averages)
-       
-        # with col2:
-        #     st.write(f'''
-        #         #### Housing    
-        #     ''')
+            col1, col2 = st.columns([1.5,2.5])
             
-        #     get_metric("Homeless Students","HOM_STUDENTS", county_only_df, averages, format_pattern='{:,.2f}', delta_color='inverse')
-        #     get_metric("Proportion homeless","proportion_homeless", county_only_df, averages, '{:.0%}', 'inverse')
+            with col1:
+                
+                st.markdown('##### Employment')
+                
+                get_metric("Ages 16-64","employed_16_64_population", county_only_df, averages, '{:.0%}')
+                get_metric("Ages 25-54","employed_25_54_population", county_only_df, averages, '{:.0%}')
             
-        # col1, col2 = st.columns(2)
-        
-        # with col1:
-        #     st.write(f'''
-        #         #### Health    
-        #     ''')
+            with col2:
+                
+                categories = ['white_employed_16_64','black_employed_16_64','american_indian_employed_16_64','asian_employed_16_64','some_other_race_alone_employed_16_64','two_or_more_race_employed_16_64','hispanic_or_latino_employed_16_64']
 
-        #     get_metric("Low Birth Rate","low_birth_rate", county_only_df, averages, format_pattern='{:.0%}', delta_color='inverse')
-        #     # st.metric("Low Birth Rate",
-        #     #         value = '{:.0%}'.format(county_only_df["low_birth_rate"].values[0]))
+                category_names = {'white_employed_16_64': 'White',
+                    'black_employed_16_64': 'Black',
+                    'american_indian_employed_16_64': 'Native American',
+                    'asian_employed_16_64': 'Asian',
+                    'hispanic_or_latino_employed_16_64': 'Hispanic/Latino',
+                    'some_other_race_alone_employed_16_64': 'Other race',
+                    'two_or_more_race_employed_16_64': 'Two or more races'
+                }
 
-        #     get_metric("HPSA Score","HPSA Score", county_only_df, averages)
+                labels = []
+                values = []
 
-        #     # st.metric("HPSA Score", "HPSA Score", county_only_df, averages)
-        #     #         value = county_only_df["HPSA Score"].values[0])
+                for c in categories:
+                    value = county_only_df[c].values[0]
+                    labels.append(category_names[c])
+                    values.append(value)
+                    
+                chart_df = pd.DataFrame({"race": labels, "value": values})         
 
-        # with col2:
-            # st.write(f'''
-            #     #### Crime    
-            #     per 100k residents
-            # ''')
+                fig = px.bar(chart_df, 
+                    x='race', 
+                    y='value',
+                    title='Employment by Race, Age 16-64',
+                    color_discrete_sequence=px.colors.sequential.Blues_r,
+                    labels=dict(race="", value="")
+                )
 
-            # get_metric("Violent Crime Rate","crime_rate", county_only_df, averages, format_pattern='{:,.2f}', delta_color='inverse')
-            
+                st.plotly_chart(fig,use_container_width=False)
+
+            # with st.expander("Source details"):
+            #     st.markdown('*People in Poverty*<br>'\
+            #         'Description: Share of residents experiencing poverty living in high-poverty neighborhoods<br>' \
+            #         'Source: ACS 5-year data',unsafe_allow_html=True)
+
+            #     st.markdown('*Racial Diversity*<br>' \
+            #         "Description: Neighborhood exposure index, or share of a person's neighbors who are people of other races and ethnicities<br>" \
+            #         'Source: ACS 5-year data<br>' \
+            #         'Notes: Used the <a href="https://censusscope.org/about_exposure.html">Census Scope</a> Exposure Index Formula to calculate the exposure index for each race at the tract level.',unsafe_allow_html=True)
+                
+            #     st.markdown('*Transportation access*<br>' \
+            #         'Description: Transit trips index<br>' \
+            #         'Source: Department of Housing and Urban Development Accessed via <a href="https://hudgis-hud.opendata.arcgis.com/datasets/location-affordability-index-v-3/api">API</a><br>' \
+            #         'Assumptions: Converted the index (hh6_transit_trips_renters)  given to percentile ranked nationally<br>' \
+            #         'Interpretation: Higher scores reflect better access to public transportation.',  unsafe_allow_html=True)
 
 ################################
 # page start             
