@@ -76,8 +76,8 @@ def build_page_content(fips_code: int):
         col1, col2 = st.columns([.75,3.25])
         
         with col1:
-            st.header("Population")
-            st.metric("2019 Population",value = '{:,}'.format(int(county_only_df["population"].values[0])))
+           st.markdown('##### Population')
+           st.metric("2019 Population",value = '{:,}'.format(int(county_only_df["population"].values[0])))
         
         with col2:
             categories = ['white','black','native_american','asian','hawaiian',	'some_other_race_alone','two_more_races','hispanic_or_latino']
