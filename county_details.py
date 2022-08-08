@@ -175,14 +175,49 @@ def build_page_content(fips_code: int):
                 st.write("Notes: See appendix")
                 
         with health:
-                 
-            st.subheader('Access to and utilization of health services')
+            
+            col1, col2 = st.columns([1.5,2.5])
 
-            get_metric("HPSA Score","HPSA Score", county_only_df, averages, delta_color='inverse')
-        
+            with col1:
+                st.subheader('Access to and utilization of health services')
+                get_metric("HPSA Score","HPSA Score", county_only_df, averages, delta_color='inverse')
+
+                st.subheader('Neonatal Health')
+                get_metric("Low Birth Rate","low_birth_rate", county_only_df, averages, delta_color='inverse')
+
+            with col2:
+                categories = ['Not Hispanic or Latino_low_birth_rate','Hispanic or Latino_low_birth_rate','Unknown or Not Stated_low_birth_rate','Black or African American_low_birth_rate','White_low_birth_rate','Asian_low_birth_rate','More than one race_low_birth_rate','American Indian or Alaska Native_low_birth_rate','Native Hawaiian or Other Pacific Islander_low_birth_rate']
+
+                category_names = {'White_low_birth_rate': 'White',
+                    'Black or African American_low_birth_rate': 'Black',
+                    'American Indian or Alaska Native_low_birth_rate': 'Indiginous',
+                    'Asian_low_birth_rate': 'Asian',
+                    'Hispanic or Latino_low_birth_rate': 'Hispanic/Latino',
+                    'Not Hispanic or Latino_low_birth_rate': 'Non Hispanic/Latino',
+                    'Unknown or Not Stated_low_birth_rate': 'Unknown/Not stated',
+                    'More than one race_low_birth_rate': 'More than 1 race',
+                    'Native Hawaiian or Other Pacific Islander_low_birth_rate': 'Hawaiian/Islander'
+                }
+
+                labels = []
+                values = []
+
+                for c in categories:
+                    value = county_only_df[c].values[0]
+                    labels.append(category_names[c])
+                    values.append(value)
+                    
+                chart_df = pd.DataFrame({"race": labels, "value": values})         
+
+                fig = px.bar(chart_df, x='race', y='value',color_discrete_sequence=px.colors.sequential.Blues_r)
+
+                st.plotly_chart(fig,use_container_width=False)
+
             with st.expander("Source details"):
                 st.write('Health Professional Shortage Area ranking for primary care providers')
                 st.markdown('Source: <a href="https://data.hrsa.gov/data/download">Health Resources & Services Administration</a>',unsafe_allow_html=True)
+                st.write('Share of low-weight births')
+                st.markdown('Source: <a href="https://wonder.cdc.gov/natality-expanded-current.html">Center for Disease Control </a>',unsafe_allow_html=True)
 
 
         # with col2:
