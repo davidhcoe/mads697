@@ -1,8 +1,6 @@
 import numpy as np
 from typing import Any, Dict
 import streamlit as st
-import matplotlib.pyplot as plt
-import seaborn as sns
 import pandas as pd 
 import altair as alt
 import plotly.express as px
@@ -69,50 +67,65 @@ def build_page_content(fips_code: int):
     if len(county_only_df) == 1:
         st.title(f"{county_only_df.NAME.values[0]}")
 
-        st.markdown('<a href="#population">Population</a> | <a href="#strong-and-healthy-families">Strong and Healthy Families</a>', unsafe_allow_html=True)
+        st.markdown('<a href="#population">Population</a> | <a href="#strong-and-healthy-families">Strong and Healthy Families</a> | <a href="#supportive-communities">Supportive Communities</a>', unsafe_allow_html=True)
 
         #############################
         # Population
         #############################
-
         
-        st.header("Population")
+        col1, col2 = st.columns([.75,3.25])
+        
+        with col1:
+            st.header("Population")
+            st.metric("2019 Population",value = '{:,}'.format(int(county_only_df["population"].values[0])))
+        
+        with col2:
+            categories = ['white','black','native_american','asian','hawaiian',	'some_other_race_alone','two_more_races','hispanic_or_latino']
 
-        col1, col2 = st.columns(2)
-    
-        st.metric("2019 Population",value = '{:,}'.format(int(county_only_df["population"].values[0])))
+            categories_names = {'white': 'White',
+                'black': 'Black',
+                'native_american': 'Native American',
+                'asian': 'Asian',
+                'hawaiian': 'Hawaiian',	
+                'some_other_race_alone': 'Other',
+                'two_more_races': 'Two or more races',
+                'hispanic_or_latino': 'Hispanic/Latino'
+                }
+
+            values = []
+
+            category_labels = []
             
-        categories = ['white','black','native_american','asian','hawaiian',	'some_other_race_alone','two_more_races','hispanic_or_latino']
-
-        categories_names = {'white': 'White',
-            'black': 'Black',
-            'native_american': 'Native American',
-            'asian': 'Asian',
-            'hawaiian': 'Hawaiian',	
-            'some_other_race_alone': 'Other',
-            'two_more_races': 'Two or more races',
-            'hispanic_or_latino': 'Hispanic/Latino'
-            }
-
-        values = []
-
-        category_labels = []
+            for c in categories:
+                value = county_only_df[c].values[0]
+                category_labels.append(categories_names[c])
+                values.append(value)
+                
+            chart_df = pd.DataFrame({"race": category_labels, "value": values}) #, "labels": value_texts})
         
-        for c in categories:
-            value = county_only_df[c].values[0]
-            category_labels.append(categories_names[c])
-            values.append(value)
+            fig = px.pie(
+                chart_df, values="value", names='race', hole = 0.4, #width=300, height=400,
+                #title='Population by Race',
+                color_discrete_sequence=px.colors.sequential.Blues_r
+            )
+
+            # fig.add_annotation(x= 0.5, y = 0.5,
+            #             text = 'Population by Race',
+            #             showarrow = False)
+
+            fig.update_layout(legend=dict(
+                orientation="h",
+                # yanchor="bottom",
+                # y=1.02,
+                # xanchor="left",
+                # x=1
+            ))
+
+            #fig.update_layout(showlegend=False)
+            #fig.update_layout(margin=dict(t=0, b=0, l=0, r=0))            
+            fig.update_traces(hovertemplate='<b>%{label}</b>') #
             
-        chart_df = pd.DataFrame({"race": category_labels, "value": values}) #, "labels": value_texts})
-     
-        fig = px.pie(
-            chart_df, values="value", names='race',
-            color_discrete_sequence=px.colors.sequential.Blues_r
-        )
-        #fig.update_layout(margin=dict(t=0, b=0, l=0, r=0))            
-        fig.update_traces(hovertemplate='<b>%{label}</b>') #
-        
-        st.plotly_chart(fig)#,use_container_width=False)
+            st.plotly_chart(fig)#,use_container_width=False)
 
         #############################
         # Strong and Healthy Families
@@ -130,8 +143,8 @@ def build_page_content(fips_code: int):
                 
                 st.subheader('Income')
             
-                get_metric("Median Family Income", "median_family_income", county_only_df, averages, '${0:,.0f}')
                 get_metric("Income 20%", "income_20_percentile",  county_only_df, averages, '${0:,.0f}')
+                get_metric("Median Family Income", "median_family_income", county_only_df, averages, '${0:,.0f}')
                 get_metric("Income 80%", "income_80_percentile",  county_only_df, averages, '${0:,.0f}')
             
             with col2:
@@ -155,7 +168,13 @@ def build_page_content(fips_code: int):
                     
                 chart_df = pd.DataFrame({"race": labels, "value": values})         
 
-                fig = px.bar(chart_df, x='race', y='value',color_discrete_sequence=px.colors.sequential.Blues_r)
+                fig = px.bar(chart_df, 
+                    x='race', 
+                    y='value',
+                    title='Median Income by Race/Ethnicity',
+                    color_discrete_sequence=px.colors.sequential.Blues_r,
+                    labels=dict(race="", value="")
+                )
 
                 st.plotly_chart(fig,use_container_width=False)
 
@@ -179,11 +198,11 @@ def build_page_content(fips_code: int):
             col1, col2 = st.columns([1.5,2.5])
 
             with col1:
-                st.subheader('Access to and utilization of health services')
+                st.markdown('##### Access to and utilization of health services')
                 get_metric("HPSA Score","HPSA Score", county_only_df, averages, delta_color='inverse')
 
-                st.subheader('Neonatal Health')
-                get_metric("Low Birth Rate","low_birth_rate", county_only_df, averages, delta_color='inverse')
+                st.markdown('##### Neonatal Health')
+                get_metric("Low Birth Rate","low_birth_rate", county_only_df, averages, '{:.0%}',delta_color='inverse')
 
             with col2:
                 categories = ['Not Hispanic or Latino_low_birth_rate','Hispanic or Latino_low_birth_rate','Unknown or Not Stated_low_birth_rate','Black or African American_low_birth_rate','White_low_birth_rate','Asian_low_birth_rate','More than one race_low_birth_rate','American Indian or Alaska Native_low_birth_rate','Native Hawaiian or Other Pacific Islander_low_birth_rate']
@@ -204,12 +223,18 @@ def build_page_content(fips_code: int):
 
                 for c in categories:
                     value = county_only_df[c].values[0]
-                    labels.append(category_names[c])
-                    values.append(value)
+
+                    if value > 0:
+                        labels.append(category_names[c])
+                        values.append(value)
                     
                 chart_df = pd.DataFrame({"race": labels, "value": values})         
 
-                fig = px.bar(chart_df, x='race', y='value',color_discrete_sequence=px.colors.sequential.Blues_r)
+                fig = px.bar(chart_df, x='race', y='value',
+                    color_discrete_sequence=px.colors.sequential.Blues_r,
+                    title='Birth Rate by Race/Ethnicity',
+                    labels=dict(race="", value="")
+                    )
 
                 st.plotly_chart(fig,use_container_width=False)
 
@@ -218,6 +243,123 @@ def build_page_content(fips_code: int):
                 st.markdown('Source: <a href="https://data.hrsa.gov/data/download">Health Resources & Services Administration</a>',unsafe_allow_html=True)
                 st.write('Share of low-weight births')
                 st.markdown('Source: <a href="https://wonder.cdc.gov/natality-expanded-current.html">Center for Disease Control </a>',unsafe_allow_html=True)
+
+        #############################
+        # Supportive Communities
+        #############################
+
+        st.header('Supportive Communities')
+
+        local_gov, neighborhoods, safety = st.tabs(['Local Governance','Neighborhoods','Safety'])
+
+        with local_gov:
+            
+            st.markdown('##### Political participation')
+
+            get_metric("Eligible population who turn out to vote","proportion_voter", county_only_df, averages, '{:.0%}')
+        
+            with st.expander("Source details"):
+                st.write('Description: Share of the voting eligible population who turn out to vote')
+                st.markdown('Source: <a href="https://dataverse.harvard.edu/file.xhtml?fileId=6100388&version=1.1">Harvard Dataverse</a> and ACS 5-year data',unsafe_allow_html=True)
+                st.write("Notes: This is voter turnout for the 2020 presidential election. There are overvote and undervote numbers but validity of the vote was not the focus, but rather that a ballot was cast (turnout), therefore vote total was used.")
+
+        with neighborhoods:
+
+            col1, col2 = st.columns([1.5,2.5])
+            
+            with col1:
+                
+                st.subheader('Economic inclusion')
+            
+                #get_metric("People in Poverty", "all_in_poverty",  county_only_df, averages, '${0:,}')
+          
+            
+            with col2:
+                
+                categories = ['median_family_income_white','median_family_income_black','median_family_income_indigenous','median_family_income_asian','median_family_income_hispanic']
+
+                category_names = {'median_family_income_white': 'White',
+                    'median_family_income_black': 'Black',
+                    'median_family_income_indigenous': 'Native American',
+                    'median_family_income_asian': 'Asian',
+                    'median_family_income_hispanic': 'Hispanic/Latino'
+                    }
+
+                labels = []
+                values = []
+
+                for c in categories:
+                    value = county_only_df[c].values[0]
+                    labels.append(category_names[c])
+                    values.append(value)
+                    
+                chart_df = pd.DataFrame({"race": labels, "value": values})         
+
+                fig = px.bar(chart_df, 
+                    x='race', 
+                    y='value',
+                    title='Median Income by Race/Ethnicity',
+                    color_discrete_sequence=px.colors.sequential.Blues_r,
+                    labels=dict(race="", value="")
+                )
+
+                st.plotly_chart(fig,use_container_width=False)
+
+            with st.expander("Source details"):
+                st.write('Description: Household income at 20th, 50th, and 80th percentiles')
+                st.write('Source: ACS 5-year data')
+                
+        with safety:
+            
+            col1, col2 = st.columns([1.5,2.5])
+
+            with col1:
+                st.markdown('##### Access to and utilization of health services')
+                get_metric("HPSA Score","HPSA Score", county_only_df, averages, delta_color='inverse')
+
+                st.markdown('##### Neonatal Health')
+                get_metric("Low Birth Rate","low_birth_rate", county_only_df, averages, '{:.0%}',delta_color='inverse')
+
+            with col2:
+                categories = ['Not Hispanic or Latino_low_birth_rate','Hispanic or Latino_low_birth_rate','Unknown or Not Stated_low_birth_rate','Black or African American_low_birth_rate','White_low_birth_rate','Asian_low_birth_rate','More than one race_low_birth_rate','American Indian or Alaska Native_low_birth_rate','Native Hawaiian or Other Pacific Islander_low_birth_rate']
+
+                category_names = {'White_low_birth_rate': 'White',
+                    'Black or African American_low_birth_rate': 'Black',
+                    'American Indian or Alaska Native_low_birth_rate': 'Indiginous',
+                    'Asian_low_birth_rate': 'Asian',
+                    'Hispanic or Latino_low_birth_rate': 'Hispanic/Latino',
+                    'Not Hispanic or Latino_low_birth_rate': 'Non Hispanic/Latino',
+                    'Unknown or Not Stated_low_birth_rate': 'Unknown/Not stated',
+                    'More than one race_low_birth_rate': 'More than 1 race',
+                    'Native Hawaiian or Other Pacific Islander_low_birth_rate': 'Hawaiian/Islander'
+                }
+
+                labels = []
+                values = []
+
+                for c in categories:
+                    value = county_only_df[c].values[0]
+
+                    if value > 0:
+                        labels.append(category_names[c])
+                        values.append(value)
+                    
+                chart_df = pd.DataFrame({"race": labels, "value": values})         
+
+                fig = px.bar(chart_df, x='race', y='value',
+                    color_discrete_sequence=px.colors.sequential.Blues_r,
+                    title='Birth Rate by Race/Ethnicity',
+                    labels=dict(race="", value="")
+                    )
+
+                st.plotly_chart(fig,use_container_width=False)
+
+            with st.expander("Source details"):
+                st.write('Health Professional Shortage Area ranking for primary care providers')
+                st.markdown('Source: <a href="https://data.hrsa.gov/data/download">Health Resources & Services Administration</a>',unsafe_allow_html=True)
+                st.write('Share of low-weight births')
+                st.markdown('Source: <a href="https://wonder.cdc.gov/natality-expanded-current.html">Center for Disease Control </a>',unsafe_allow_html=True)
+
 
 
         # with col2:
@@ -264,12 +406,12 @@ def build_page_content(fips_code: int):
         #     #         value = county_only_df["HPSA Score"].values[0])
 
         # with col2:
-            st.write(f'''
-                #### Crime    
-                per 100k residents
-            ''')
+            # st.write(f'''
+            #     #### Crime    
+            #     per 100k residents
+            # ''')
 
-            get_metric("Violent Crime Rate","crime_rate", county_only_df, averages, format_pattern='{:,.2f}', delta_color='inverse')
+            # get_metric("Violent Crime Rate","crime_rate", county_only_df, averages, format_pattern='{:,.2f}', delta_color='inverse')
             
 
 ################################
