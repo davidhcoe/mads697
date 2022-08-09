@@ -9,8 +9,10 @@ import wikipedia
 import requests
 import json
 
+
 WIKI_REQUEST = 'http://en.wikipedia.org/w/api.php?action=query&prop=pageimages&format=json&piprop=original&titles='
 
+# per https://stackoverflow.com/questions/30595918/is-there-any-api-to-get-image-from-wiki-page
 def get_wiki_image(search_term):
     try:
         result = wikipedia.search(search_term, results = 1)
@@ -24,7 +26,7 @@ def get_wiki_image(search_term):
     except:
         return 0
 
-#@st.cache(suppress_st_warning=True)
+@st.cache(suppress_st_warning=True)
 def get_dataframe():
     df = pd.read_csv('counties_merged.csv')
 
@@ -120,6 +122,7 @@ def build_page_content(fips_code: int):
             
             for c in categories:
                 value = county_only_df[c].values[0]
+
                 if value > 0:
                     category_labels.append(categories_names[c])
                     values.append(value)
@@ -186,6 +189,7 @@ def build_page_content(fips_code: int):
 
                 for c in categories:
                     value = county_only_df[c].values[0]
+                    
                     if value > 0:
                         labels.append(category_names[c])
                         values.append(value)
@@ -329,8 +333,10 @@ def build_page_content(fips_code: int):
 
                 for c in categories:
                     value = county_only_df[c].values[0]
-                    labels.append(category_names[c])
-                    values.append(value)
+
+                    if value > 0:
+                        labels.append(category_names[c])
+                        values.append(value)
                     
                 chart_df = pd.DataFrame({"race": labels, "value": values})         
 
@@ -415,8 +421,10 @@ def build_page_content(fips_code: int):
 
                 for c in categories:
                     value = county_only_df[c].values[0]
-                    labels.append(category_names[c])
-                    values.append(value)
+
+                    if value > 0:
+                        labels.append(category_names[c])
+                        values.append(value)
                     
                 chart_df = pd.DataFrame({"race": labels, "value": values})         
 
@@ -465,8 +473,10 @@ def build_page_content(fips_code: int):
 
                 for c in categories:
                     value = county_only_df[c].values[0]
-                    labels.append(category_names[c])
-                    values.append(value)
+
+                    if value > 0:
+                        labels.append(category_names[c])
+                        values.append(value)
                     
                 chart_df = pd.DataFrame({"race": labels, "value": values})         
 
