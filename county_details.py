@@ -5,8 +5,24 @@ import pandas as pd
 import altair as alt
 import plotly.express as px
 
-import matplotlib.style as style
-style.use('fivethirtyeight')
+import wikipedia
+import requests
+import json
+
+WIKI_REQUEST = 'http://en.wikipedia.org/w/api.php?action=query&prop=pageimages&format=json&piprop=original&titles='
+
+def get_wiki_image(search_term):
+    try:
+        result = wikipedia.search(search_term, results = 1)
+        wikipedia.set_lang('en')
+        wkpage = wikipedia.WikipediaPage(title = result[0])
+        title = wkpage.title
+        response  = requests.get(WIKI_REQUEST+title)
+        json_data = json.loads(response.text)
+        img_link = list(json_data['query']['pages'].values())[0]['original']['source']
+        return img_link        
+    except:
+        return 0
 
 #@st.cache(suppress_st_warning=True)
 def get_dataframe():
@@ -65,7 +81,13 @@ def build_page_content(fips_code: int):
     county_only_df = df[df['FIPS']==int(fips_code)]
 
     if len(county_only_df) == 1:
-        st.title(f"{county_only_df.NAME.values[0]}")
+        name = county_only_df.NAME.values[0]
+        st.title(f"{name}")
+
+        wiki_image = get_wiki_image(name)
+
+        if wiki_image != 0:
+            st.markdown(f'<img src="{wiki_image}" width="300" height="225" alt="Wikipedia image of {name}"/>', unsafe_allow_html=True)
 
         st.markdown('<a href="#population">Population</a> | <a href="#strong-and-healthy-families">Strong and Healthy Families</a> | <a href="#supportive-communities">Supportive Communities</a> | <a href="#opportunities-to-learn-and-earn">Opportunities to Learn and Earn</a>', unsafe_allow_html=True)
 
@@ -229,16 +251,18 @@ def build_page_content(fips_code: int):
                     if value > 0:
                         labels.append(category_names[c])
                         values.append(value)
-                    
-                chart_df = pd.DataFrame({"race": labels, "value": values})         
+                
+                # not all counties have data
+                if len(values) > 0:
+                    chart_df = pd.DataFrame({"race": labels, "value": values})         
 
-                fig = px.bar(chart_df, x='race', y='value',
-                    color_discrete_sequence=px.colors.sequential.Blues_r,
-                    title='Low Birth Rate by Race/Ethnicity',
-                    labels=dict(race="", value="")
-                    )
+                    fig = px.bar(chart_df, x='race', y='value',
+                        color_discrete_sequence=px.colors.sequential.Blues_r,
+                        title='Low Birth Rate by Race/Ethnicity',
+                        labels=dict(race="", value="")
+                        )
 
-                st.plotly_chart(fig,use_container_width=False)
+                    st.plotly_chart(fig,use_container_width=False)
 
             with st.expander("Source details"):
                 st.write('Health Professional Shortage Area ranking for primary care providers')
