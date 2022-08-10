@@ -1,7 +1,8 @@
 import streamlit as st
 import pandas as pd
 import altair as alt
-from utilities import get_parameter, METRIC_PARAMETER
+import numpy as np
+from utilities import get_parameter, METRIC_PARAMETER, INTEGER_METRICS, PERCENT_METRICS
 
 def show_national_page():
     url = ''
@@ -53,3 +54,33 @@ def show_national_page():
     c = get_map(metric)
 
     st.altair_chart(c)
+    
+    if metric in INTEGER_METRICS:
+        st.metric("National Average",value = '{:,}'.format(int(counties_df[metric].mean())))
+        counties_df[metric]  = np.floor(pd.to_numeric(counties_df[metric], errors='coerce')).astype('Int64')
+
+        col1, col2 = st.columns(2, gap='medium')
+    
+        with col1:
+            st.header("5 Highest Counties")
+            st.dataframe(counties_df[['NAME', metric]].sort_values(by=[metric], ascending=False).set_index('NAME').head(5))
+        
+        with col2:
+            st.header("5 Lowest Counties")
+            st.dataframe(counties_df[['NAME', metric]].sort_values(by=[metric], ascending=True).set_index('NAME').head(5))
+        
+    elif metric in PERCENT_METRICS:
+        counties_df.dropna(subset=[metric], inplace=True)
+        st.metric("National Average",value = '{:.2%}'.format(counties_df[metric].mean()))
+        counties_df['metric_original'] = counties_df[metric] 
+        counties_df[metric] = counties_df[metric].astype(float).map(lambda n: '{:.2%}'.format(n))
+    
+        col1, col2 = st.columns(2, gap='medium')
+        
+        with col1:
+            st.header("5 Highest Counties")
+            st.dataframe(counties_df.sort_values(by='metric_original', ascending=False).set_index('NAME').head(5)[metric])
+        
+        with col2:
+            st.header("5 Lowest Counties")
+            st.dataframe(counties_df.sort_values(by='metric_original', ascending=True).set_index('NAME').head(5)[metric])

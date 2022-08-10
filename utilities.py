@@ -11,6 +11,23 @@ WIKI_REQUEST = 'http://en.wikipedia.org/w/api.php?action=query&prop=pageimages&f
 METRIC_PARAMETER = 'metric'
 FIPS_PARAMETER = 'fips'
 
+INTEGER_METRICS = ['population', 'HPSA Score', 'transit_trips_index', 'transit_low_cost_index', 
+                  'crime_rate', 'juvenile_crime_rate', 'avg_edu_prof_diff', 'median_family_income',
+                  'income_20_percentile', 'income_80_percentile', 'median_family_income_white',
+                  'median_family_income_black', 'median_family_income_indigenous',
+                  'median_family_income_asian', 'median_family_income_hispanic']
+
+PERCENT_METRICS = ['proportion_homeless', 'low_birth_rate', 'Not Hispanic or Latino_low_birth_rate',
+                    'Hispanic or Latino_low_birth_rate', 'Black or African American_low_birth_rate',
+                    'White_low_birth_rate', 'Asian_low_birth_rate', 'proportion_voter', 
+                    'proportion_high_poverty_neighborhood', 'hispanic_or_latino_exposure', 'white_exposure',
+                    'black_exposure','native_american_exposure', 'asian_exposure', 'preschool_enroll',
+                    'preschool_enrollment_white', 'preschool_enrollment_black','preschool_enrollment_hispanic',
+                    'preschool_enrollment_indigenous', 'preschool_enrollment_asian', 'employed_25_54_population',
+                    'employed_16_64_population', 'black_employed_16_64', 'white_employed_16_64',
+                    'hispanic_or_latino_employed_16_64', 'american_indian_employed_16_64', 'asian_employed_16_64',
+                    'some_other_race_alone_employed_16_64', 'two_or_more_race_employed_16_64']
+
 # per https://stackoverflow.com/questions/30595918/is-there-any-api-to-get-image-from-wiki-page
 def get_wiki_image(search_term):
     '''
