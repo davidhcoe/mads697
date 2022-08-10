@@ -12,7 +12,7 @@ def show_national_page():
             url = 'http://localhost:8501/?fips='
     else:
             #url = 'https://upwardmobility.pythonanywhere.com/county-details?fips='
-            url = 'https://davidhcoe-mads697-county-details-pr63wa.streamlitapp.com/?fips='
+            url = 'https://davidhcoe-mads697-main-1sf12v.streamlitapp.com/?fips='
 
     def get_url(row):
         row['url'] = url + str(row['id'])
