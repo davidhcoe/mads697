@@ -27,12 +27,15 @@ def show_national_page():
 
     def get_map(metric):
         counties = alt.topo_feature('https://cdn.jsdelivr.net/npm/vega-datasets@v1.29.0/data/us-10m.json', 'counties')
-
+        if metric in PERCENT_METRICS:
+            formatting = alt.Tooltip(f'{metric}:Q', format='.2%')
+        else:
+            formatting = alt.Tooltip(f'{metric}:Q', format=',.0f')
         c = alt.Chart(counties).mark_geoshape(
             stroke='#706545', strokeWidth=0.5
         ).encode(
             color=metric+':Q',
-            tooltip=['NAME:N'],
+            tooltip=['NAME:N', formatting],
             href='url:N'
         ).transform_lookup(
             lookup='id',
@@ -63,30 +66,22 @@ def show_national_page():
     
     if metric in INTEGER_METRICS:
         st.metric("National Average",value = '{:,}'.format(int(counties_df[metric].mean())))
-        counties_df[metric]  = np.floor(pd.to_numeric(counties_df[metric], errors='coerce')).astype('Int64')
+        counties_df[metric]  = pd.to_numeric(counties_df[metric], errors='coerce')
+        counties_df['metric_original'] = counties_df[metric]
+        counties_df[metric] = counties_df[metric].astype(float).map(lambda n: "{0:,.0f}".format(n))
 
-        col1, col2 = st.columns(2, gap='medium')
-    
-        with col1:
-            st.header("5 Highest Counties")
-            st.dataframe(counties_df[['NAME', metric]].sort_values(by=[metric], ascending=False).set_index('NAME').head(5))
-        
-        with col2:
-            st.header("5 Lowest Counties")
-            st.dataframe(counties_df[['NAME', metric]].sort_values(by=[metric], ascending=True).set_index('NAME').head(5))
-        
     elif metric in PERCENT_METRICS:
         counties_df.dropna(subset=[metric], inplace=True)
         st.metric("National Average",value = '{:.2%}'.format(counties_df[metric].mean()))
-        counties_df['metric_original'] = counties_df[metric] 
+        counties_df['metric_original'] = counties_df[metric]
         counties_df[metric] = counties_df[metric].astype(float).map(lambda n: '{:.2%}'.format(n))
     
-        col1, col2 = st.columns(2, gap='medium')
-        
-        with col1:
-            st.header("5 Highest Counties")
-            st.dataframe(counties_df.sort_values(by='metric_original', ascending=False).set_index('NAME').head(5)[metric])
-        
-        with col2:
-            st.header("5 Lowest Counties")
-            st.dataframe(counties_df.sort_values(by='metric_original', ascending=True).set_index('NAME').head(5)[metric])
+    col1, col2 = st.columns(2, gap='medium')
+
+    with col1:
+        st.header("5 Highest Counties")
+        st.dataframe(counties_df.sort_values(by='metric_original', ascending=False).set_index('NAME').head(5)[metric])
+
+    with col2:
+        st.header("5 Lowest Counties")
+        st.dataframe(counties_df.sort_values(by='metric_original', ascending=True).set_index('NAME').head(5)[metric])
