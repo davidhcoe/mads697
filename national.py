@@ -34,7 +34,7 @@ def show_national_page():
         c = alt.Chart(counties).mark_geoshape(
             stroke='#706545', strokeWidth=0.5
         ).encode(
-            color=metric+':Q',
+            color=alt.Color(metric+':Q', legend=alt.Legend(title="")),
             tooltip=['NAME:N', formatting],
             href='url:N'
         ).transform_lookup(
