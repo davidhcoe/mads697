@@ -31,7 +31,7 @@ PERCENT_METRICS = ['proportion_homeless', 'low_birth_rate', 'Not Hispanic or Lat
 HUMAN_READABLE_METRICS = {
     'population': 'Population',
     'proportion_homeless': 'Housing instability and homelessness in students',
-    'HPSA Score': 'HPSA Score',
+    'HPSA Score': 'Health Professional Shortage Area Score',
     'low_birth_rate': 'Proportion of Births Classified as Low-Weight',
     'Not Hispanic or Latino_low_birth_rate': 'Proportion of Births Classified as Low-Weight: Non Hispanic or Latino',
     'Hispanic or Latino_low_birth_rate': 'Proportion of Births Classified as Low-Weight: Hispanic or Latino',

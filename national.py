@@ -61,7 +61,7 @@ def show_national_page():
     metric = get_parameter(METRIC_PARAMETER,'population')
 
     c = get_map(metric)
-
+    st.title(HUMAN_READABLE_METRICS[metric])
     st.altair_chart(c)
     
     if metric in INTEGER_METRICS:
