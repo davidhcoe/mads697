@@ -46,7 +46,13 @@ def show_national_page():
             height=500
         )
 
-        return c
+
+        background = alt.Chart(counties).mark_geoshape(
+            fill='#ededed',
+            stroke='white'
+        ).project('albersUsa')
+
+        return background + c
 
     metric = get_parameter(METRIC_PARAMETER,'population')
 
