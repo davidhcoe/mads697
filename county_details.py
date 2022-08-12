@@ -241,8 +241,8 @@ def show_county_details_page():
                 with st.expander("Source details"):
                     st.markdown(
                         'Description: Share of the voting eligible population who turn out to vote<br>'\
-                        'Source: <a href="https://dataverse.harvard.edu/file.xhtml?fileId=6100388&version=1.1">Harvard Dataverse</a> and ACS 5-year data<br>' \
-                        "Notes: This is voter turnout for the 2020 presidential election. There are overvote and undervote numbers but validity of the vote was not the focus, but rather that a ballot was cast (turnout), therefore vote total was used."
+                        'Source: MIT Election Data and Science Lab for 2020 Election pulled from the <a href="https://dataverse.harvard.edu/file.xhtml?fileId=6100388&version=1.1">Harvard Dataverse</a> aand American Community Survey 2020 5-year data<br>' \
+                        "Notes: This measures the share of the voting-eligible population who voted in the most recent presidential election."
                         ,unsafe_allow_html=True
                     )
 
@@ -305,13 +305,13 @@ def show_county_details_page():
 
                 with st.expander("Source details"):
                     st.markdown('*People in Poverty*<br>'\
-                        'Description: Share of residents experiencing poverty living in high-poverty neighborhoods<br>' \
-                        'Source: ACS 5-year data',unsafe_allow_html=True)
+                        'Description:  Share of county residents experiencing poverty that live in high-poverty neighborhoods (a neighborhood is defined as a census tract).  A high-poverty neighborhood is one in which over 40 percent of the residents are experiencing poverty.<br>' \
+                        'Source: American Community Survey (ACS) 5-year data, 2019',unsafe_allow_html=True)
 
                     st.markdown('*Racial Diversity*<br>' \
                         'Description: Neighborhood exposure index, or share of a person’s neighbors who are people of other races and ethnicities<br>' \
-                        'Source: ACS 5-year data<br>' \
-                        'Notes: Used the <a href="https://censusscope.org/about_exposure.html">Census Scope</a> Exposure Index Formula to calculate the exposure index for each race at the tract level.',unsafe_allow_html=True)
+                        'Source: ACS 5-year data, 2019<br>' \
+                        "Notes: This is a set of metrics constructed separately for each racial/ethnic group and reports the average share of that group's neighbors who are members of other racial/ethnic groups. This is a type of exposure index. For example, an exposure index of 80% in “Hispanic or Latino“' means that the average Hispanic or Latino resident has 80% of their neighbors within a census tract who have a different ethnicity than them. The higher the value, the more exposed to people of different races/ethnicities.",unsafe_allow_html=True)
                     
                     st.markdown('*Transportation access*<br>' \
                         'Description: Transit trips index<br>' \
@@ -336,8 +336,8 @@ def show_county_details_page():
                 with st.expander("Source details"):
                     st.markdown('*Exposure to crime*<br>' \
                         'Description: Rates of reported violent crime<br>' \
-                        'Source: <a href="http://api.usa.gov/">api.usa.gov</a><br>' \
-                        'Assumptions: To calculate the rate of crime per 100k residents the ACS population data was used for each city',unsafe_allow_html=True)
+                        "Source: Federal Bureau of Investigations (FBI) Uniform Crime Statistic (UCR) Crime in the United States, 2019, accessed via <a href='http://api.usa.gov/'>api.usa.gov</a>; American Community Survey 5-year data, 2019<br>" \
+                        "Notes:  Violent crime is composed of four offenses: murder and nonnegligent manslaughter, rape, robbery, and aggravated assault. Rates are calculated as the number of reported crimes per 100,000 people. The FBI cautions using UCR data to rank or compare locales because this can create, ‘misleading perceptions which adversely affect geographic entities and their residents.’",unsafe_allow_html=True)
 
             #############################
             # Opportunities to Learn and Earn
@@ -386,7 +386,7 @@ def show_county_details_page():
                     fig = px.bar(chart_df, 
                         x='race', 
                         y='value',
-                        title='PreK Enrollment by Race/Ethnicity',
+                        title='Proportion of PreK Students who Identify as a Given Race/Ethnicity',
                         color_discrete_sequence=px.colors.sequential.Blues_r,
                         labels=dict(race="", value="")
                     )
@@ -397,7 +397,7 @@ def show_county_details_page():
                     
                     st.markdown('*Access to preschool*<br>' \
                         'Description: Share of children enrolled in nursery school or preschool<br>' \
-                        'Source: ACS 5-year data',  unsafe_allow_html=True)
+                        'Source: ACS 5-year data, 2019',  unsafe_allow_html=True)
 
             with work:
 
