@@ -160,7 +160,7 @@ def show_county_details_page():
             
                 with st.expander("Source details"):
                     st.markdown(
-                        'Description: Portion of public-school children who are ever homeless during the school year<br>'\
+                        'Description: Portion of public-school children who had ever experienced housing instability in the 2018-2019 school year<br>'\
                         'Source: <a href="https://www2.ed.gov/about/inits/ed/edfacts/data-files/school-status-data.html">US Department of Education</a>',
                         unsafe_allow_html=True)
                     
@@ -314,9 +314,10 @@ def show_county_details_page():
                         "Notes: This is a set of metrics constructed separately for each racial/ethnic group and reports the average share of that group's neighbors who are members of other racial/ethnic groups. This is a type of exposure index. For example, an exposure index of 80% in “Hispanic or Latino“' means that the average Hispanic or Latino resident has 80% of their neighbors within a census tract who have a different ethnicity than them. The higher the value, the more exposed to people of different races/ethnicities.",unsafe_allow_html=True)
                     
                     st.markdown('*Transportation access*<br>' \
-                        'Description: Transit trips index<br>' \
+                        'Description: Transit Index<br>' \
                         'Source: Department of Housing and Urban Development Accessed via <a href="https://hudgis-hud.opendata.arcgis.com/datasets/location-affordability-index-v-3/api">API</a><br>' \
-                        'Assumptions: Converted the index (hh6_transit_trips_renters)  given to percentile ranked nationally<br>' \
+                        'Notes: Converted the transit trips index (hh6_transit_trips_renters) given to percentile ranked nationally '\
+                        'and inverted the transity cost index (hh6_t_renters) then converted to a percentile ranked nationally.<br>' \
                         'Interpretation: Higher scores reflect better access to public transportation.',  unsafe_allow_html=True)
 
             with safety:
@@ -397,7 +398,12 @@ def show_county_details_page():
                     
                     st.markdown('*Access to preschool*<br>' \
                         'Description: Share of children enrolled in nursery school or preschool<br>' \
-                        'Source: ACS 5-year data, 2019',  unsafe_allow_html=True)
+                        'Source: ACS 5-year data, 2019<br><br>'\
+                        ''' *Effective Education*<br>Description: Average per-grade change in English Language Arts Achievement, between third and eighth grades<br>
+                        Source: <a href="https://www2.ed.gov/about/inits/ed/edfacts/data-files/index.html">US Department of Education</a>, 2018-2019 school year<br>
+                        Notes: Calculated using weighted average for differences within the same county. <br><br>
+                        '''
+                        ,  unsafe_allow_html=True)
 
             with work:
 
@@ -409,7 +415,7 @@ def show_county_details_page():
                     
                     get_metric("Ages 16-64","employed_16_64_population", county_only_df, averages, '{:.0%}')
                     get_metric("Ages 25-54","employed_25_54_population", county_only_df, averages, '{:.0%}')
-                
+
                 with col2:
                     
                     categories = ['white_employed_16_64','black_employed_16_64','american_indian_employed_16_64','asian_employed_16_64','some_other_race_alone_employed_16_64','two_or_more_race_employed_16_64','hispanic_or_latino_employed_16_64']
@@ -445,6 +451,13 @@ def show_county_details_page():
 
                     st.plotly_chart(fig,use_container_width=False)
 
+                with st.expander("Source details"):
+                        st.markdown('''*Employment*<br>
+                            Description: Employment-to-population ratio for adults<br>
+                            Source: ACS 5-year data, 2019<br>
+                            Notes: Calculated using civilian population
+                            '''
+                            ,  unsafe_allow_html=True)
                 # with st.expander("Source details"):
                 #     st.markdown('*People in Poverty*<br>'\
                 #         'Description: Share of residents experiencing poverty living in high-poverty neighborhoods<br>' \
