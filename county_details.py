@@ -357,6 +357,9 @@ def show_county_details_page():
                     st.metric("PreK-12 enrollment", 
                         value = '{:,}'.format(int(county_only_df["public_students_pre_12"].values[0]))
                     )
+                    st.markdown('##### Effective Education')
+                    get_metric("Avg change in English LA scores, grades 3-8","avg_edu_prof_diff", county_only_df, averages, "{0:,.0f}")
+
 
                 with col2:
                     categories = ['preschool_enrollment_white','preschool_enrollment_black','preschool_enrollment_hispanic','preschool_enrollment_indigenous','preschool_enrollment_asian']
