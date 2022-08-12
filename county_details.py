@@ -149,7 +149,7 @@ def show_county_details_page():
                 with st.expander("Source details"):
                     st.markdown(
                         'Description: Household income at 20th, 50th, and 80th percentiles<br>'\
-                        'Source: ACS 5-year data', unsafe_allow_html=True
+                        'Source: ACS 5-year data, 2019', unsafe_allow_html=True
                     )
 
             with housing:
