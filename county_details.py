@@ -358,7 +358,7 @@ def show_county_details_page():
                         value = '{:,}'.format(int(county_only_df["public_students_pre_12"].values[0]))
                     )
                     st.markdown('##### Effective Education')
-                    get_metric("Avg change in English LA scores, grades 3-8","avg_edu_prof_diff", county_only_df, averages, "{0:,.0f}")
+                    get_metric("Avg change in English LA Proficiency in 3-8","avg_edu_prof_diff", county_only_df, averages, "{0:,.1f}")
 
 
                 with col2:

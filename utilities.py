@@ -138,7 +138,7 @@ def get_metric(name: str, col_name: str,county_df: pd.DataFrame, averages:Dict[s
 
     if value:
         value = float(value)
-        delta = round(value/averages[col_name], 1)
+        delta = value - averages[col_name]
     
     if np.isnan(value):
         return st.metric(name,
@@ -151,8 +151,10 @@ def get_metric(name: str, col_name: str,county_df: pd.DataFrame, averages:Dict[s
         value = format_pattern.format(value)
     
     if delta is not None:
-        delta_str = f'{delta}% from national average'
-
+        if col_name in PERCENT_METRICS:
+            delta_str = f'{round(delta*100, 1)}% from national average'
+        else:
+            delta_str = f'{round(delta, 1)} from national average'
         return st.metric(name,
             value = value, 
             delta=delta_str, 
