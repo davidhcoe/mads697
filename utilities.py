@@ -205,24 +205,4 @@ PREFERRED_METRICS = {
     }
 
 
-IDEAL_SCORES = {
-    'proportion_homeless': 0,
-    'HPSA Score': 0,
-    'low_birth_rate': 0,
-    'proportion_voter': 1,
-    'proportion_high_poverty_neighborhood': 0,
-    'hispanic_or_latino_exposure': .5,
-    'white_exposure': .5,
-    'black_exposure': .5,
-    'native_american_exposure':.5,
-    'transit_trips_index': 100,
-    'transit_low_cost_index': 100,
-    'crime_rate': 0,
-    'juvenile_crime_rate': 0,
-    'avg_edu_prof_diff': 20,
-    'preschool_enroll': 1,
-    'employed_25_54_population': 1,
-    'median_family_income': 300000,
-    'income_20_percentile': 300000,
-    'income_80_percentile': 300000,
-}
+

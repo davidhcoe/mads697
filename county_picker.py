@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import altair as alt
-from utilities import get_dataframe, get_parameter, PREFERRED_METRICS, IDEAL_SCORES
+from utilities import get_dataframe, get_parameter, PREFERRED_METRICS
 
 def show_county_picker_page():
 
@@ -59,7 +59,27 @@ def show_county_picker_page():
         return background + c
 
     feature_names = PREFERRED_METRICS
-    ideal_scores = IDEAL_SCORES
+    ideal_scores =  {
+        'proportion_homeless': df['proportion_homeless'].min(),
+        'HPSA Score':  df['HPSA Score'].min(),
+        'low_birth_rate':  df['low_birth_rate'].min(),
+        'proportion_voter': df['proportion_voter'].max(),
+        'proportion_high_poverty_neighborhood': df['proportion_high_poverty_neighborhood'].min(),
+        'hispanic_or_latino_exposure': .5,
+        'white_exposure': .5,
+        'black_exposure': .5,
+        'native_american_exposure':.5,
+        'transit_trips_index': df['transit_trips_index'].max(),
+        'transit_low_cost_index': df['transit_low_cost_index'].max(),
+        'crime_rate': df['crime_rate'].min(),
+        'juvenile_crime_rate': df['juvenile_crime_rate'].min(),
+        'avg_edu_prof_diff': df['avg_edu_prof_diff'].max(),
+        'preschool_enroll': df['preschool_enroll'].max(),
+        'employed_25_54_population': df['employed_25_54_population'].max(),
+        'median_family_income': df['median_family_income'].max(),
+        'income_20_percentile': df['income_20_percentile'].max(),
+        'income_80_percentile': df['income_80_percentile'].max(),
+    }
 
     options = [0,10,20,30,40,50,60,70,80,100]
 
