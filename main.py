@@ -1,5 +1,4 @@
 import streamlit as st
-
 from utilities import get_parameter, FIPS_PARAMETER, METRIC_PARAMETER
 from county_details import show_county_details_page
 from national import show_national_page

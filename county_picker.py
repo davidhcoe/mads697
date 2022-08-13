@@ -1,20 +1,65 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-from utilities import get_dataframe
+import altair as alt
+from utilities import get_dataframe, get_parameter, PREFERRED_METRICS, IDEAL_SCORES
 
 def show_county_picker_page():
-    feature_names = {
-        'HPSA Score': 'HPSA Score', 
-        'Low Birth Rate': 'low_birth_rate',
-        'Avg Edu Prof': 'avg_edu_prof_diff'
-    }
 
-    ideal_scores = {
-        'HPSA Score': 0,
-        'low_birth_rate': 0,
-        'avg_edu_prof_diff': 10
-    }
+    cached_df,_ = get_dataframe()
+
+    url = ''
+
+    debug = get_parameter('debug','false')
+
+    if debug =='true':
+        url = 'http://localhost:8501/?fips='
+    else:
+        url = 'https://davidhcoe-mads697-main-1sf12v.streamlitapp.com/?fips='
+
+    def get_url(row):
+        row['url'] = url + str(row['id'])
+        return row
+
+    df = cached_df.copy()
+    df['HPSA Score'] = df['HPSA Score'].fillna(0) # I think this means that it doesn't have HPSA shortage
+    county_display_df = df[['NAME','FIPS']]
+    county_display_df.columns = ['NAME','id']
+    county_display_df['url'] = ''
+    county_display_df = county_display_df.apply(get_url, axis=1)
+
+    def get_map(ranking_df):
+        counties = alt.topo_feature('https://cdn.jsdelivr.net/npm/vega-datasets@v1.29.0/data/us-10m.json', 'counties')
+
+        c = alt.Chart(counties).mark_geoshape(
+            stroke='#706545', strokeWidth=0.5
+        ).encode(
+            color=alt.Color('ranking:Q', legend=alt.Legend(title="")),
+            tooltip=['NAME:N', 'ranking:Q'],
+            href='url:N'
+        ).transform_lookup(
+            lookup='id',
+            from_=alt.LookupData(county_display_df, 'id', ['NAME', 'url'])
+        ).transform_lookup(
+            lookup='id',
+            from_=alt.LookupData(ranking_df, 'FIPS', ['ranking'])
+        ).project(
+            type='albersUsa'
+        ).properties(
+            width=900,
+            height=500
+        )
+
+
+        background = alt.Chart(counties).mark_geoshape(
+            fill='#ededed',
+            stroke='white'
+        ).project('albersUsa')
+
+        return background + c
+
+    feature_names = PREFERRED_METRICS
+    ideal_scores = IDEAL_SCORES
 
     options = [0,10,20,30,40,50,60,70,80,100]
 
@@ -62,12 +107,6 @@ def show_county_picker_page():
     
                 input1, input2, input3 = feature_names[choice1_select],feature_names[choice2_select],feature_names[choice3_select]
 
-                cached_df,_ = get_dataframe()
-
-                df = cached_df.copy() #to avoid a warning
-
-                df['HPSA Score'] = df['HPSA Score'].fillna(0) # I think this means that it doesn't have HPSA shortage
-
                 metrics = [
                 'median_family_income',
                 'income_20_percentile',
@@ -110,5 +149,7 @@ def show_county_picker_page():
                 ranking_df['ranking']=choice1/100*ranking_df[new_names[0]] + choice2/100*ranking_df[new_names[1]] + choice3/100*ranking_df[new_names[2]]
 
                 sorted_ranking_df = ranking_df.sort_values('ranking',ascending=False).head(5)
-
+                c = get_map(ranking_df)
+                st.title('Ranked Counties Based on Selected Preferred Metrics')
+                st.altair_chart(c)
                 st.dataframe(sorted_ranking_df)
