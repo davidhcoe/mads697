@@ -181,3 +181,48 @@ def get_parameter(name, default_value):
         param_value = url_params[name][0]
 
     return param_value
+
+PREFERRED_METRICS = {
+        'Housing instability and homelessness in students':'proportion_homeless',
+        'HPSA Score':'HPSA Score',
+        'Proportion of Births Classified as Low-Weight':'low_birth_rate',
+        'Voter Turnout':'proportion_voter',
+        'Residents Living in High Poverty Neighborhoods':'proportion_high_poverty_neighborhood',
+        'Racial Exposure: Hispanic or Latino Population':'hispanic_or_latino_exposure',
+        'Racial Exposure: White Population':'white_exposure',
+        'Racial Exposure: Black Population': 'black_exposure',
+        'Racial Exposure: Native American Population': 'native_american_exposure',
+        'Transit Trips Index': 'transit_trips_index',
+        'Transit Low Cost Index': 'transit_low_cost_index',
+        'Violent Crime Rate': 'crime_rate',
+        'Juvenile Crime Rate': 'juvenile_crime_rate',
+        'Average Change in English Language Arts Achievement': 'avg_edu_prof_diff',
+        'Preschool Enrollment Rate': 'preschool_enroll',
+        'Employment-to-Population Ratio 25 - 54 y.o.': 'employed_25_54_population',
+        'Median Household Income': 'median_family_income',
+        '20th Percentile Household Income':'income_20_percentile',
+        '80th Percentile Household Income': 'income_80_percentile'
+    }
+
+
+IDEAL_SCORES = {
+    'proportion_homeless': 0,
+    'HPSA Score': 0,
+    'low_birth_rate': 0,
+    'proportion_voter': 1,
+    'proportion_high_poverty_neighborhood': 0,
+    'hispanic_or_latino_exposure': .5,
+    'white_exposure': .5,
+    'black_exposure': .5,
+    'native_american_exposure':.5,
+    'transit_trips_index': 100,
+    'transit_low_cost_index': 100,
+    'crime_rate': 0,
+    'juvenile_crime_rate': 0,
+    'avg_edu_prof_diff': 20,
+    'preschool_enroll': 1,
+    'employed_25_54_population': 1,
+    'median_family_income': 300000,
+    'income_20_percentile': 300000,
+    'income_80_percentile': 300000,
+}
