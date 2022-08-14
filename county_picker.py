@@ -175,7 +175,7 @@ def show_county_picker_page():
                 ).head(5)
 
                 def get_table_url(row):
-                    # need to add the target="self" otherwise there is some magic that automatically sets it to _blank
+                    # need to add the target="_self" otherwise there is some magic that automatically sets it to _blank
                     row["NAME"] = (
                         f'<a href="{get_county_details_url()+str(row["FIPS"])}" target="_self">'
                         + str(row["NAME"])
