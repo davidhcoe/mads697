@@ -66,54 +66,120 @@ def show_county_details_page():
                 )
 
             with col2:
-                categories = [
-                    "white",
-                    "black",
-                    "native_american",
-                    "asian",
-                    "hawaiian",
-                    "some_other_race_alone",
-                    "two_more_races",
-                    "hispanic_or_latino",
-                ]
-
-                categories_names = {
-                    "white": "White",
-                    "black": "Black",
-                    "native_american": "Native American",
-                    "asian": "Asian",
-                    "hawaiian": "Hawaiian",
-                    "some_other_race_alone": "Other",
-                    "two_more_races": "Two or more races",
-                    "hispanic_or_latino": "Hispanic/Latino",
-                }
 
                 values = []
 
-                category_labels = []
+                white_hispanic = county_only_df.iloc[0][
+                    "hispanic_or_latino_white_total"
+                ]
+                white = county_only_df.iloc[0]["white_total"] - white_hispanic
+                values.append(white)
+                values.append(white_hispanic)
 
-                for c in categories:
-                    value = county_only_df[c].values[0]
+                black_hispanic = county_only_df.iloc[0][
+                    "hispanic_or_latino_black_total"
+                ]
+                black = county_only_df.iloc[0]["black_total"] - black_hispanic
+                values.append(black)
+                values.append(black_hispanic)
 
-                    if value > 0:
-                        category_labels.append(categories_names[c])
-                        values.append(value)
+                native_hispanic = county_only_df.iloc[0][
+                    "hispanic_or_latino_american_indian_total"
+                ]
+                native = (
+                    county_only_df.iloc[0]["native_american_total"] - native_hispanic
+                )
+                values.append(native)
+                values.append(native_hispanic)
 
-                chart_df = pd.DataFrame({"race": category_labels, "value": values})
+                asian_hispanic = county_only_df.iloc[0][
+                    "hispanic_or_latino_asian_total"
+                ]
+                asian = county_only_df.iloc[0]["asian_total"] - asian_hispanic
+                values.append(asian)
+                values.append(asian_hispanic)
 
-                fig = px.pie(
-                    chart_df,
-                    values="value",
-                    names="race",
-                    hole=0.4,
+                hawaiian_hispanic = county_only_df.iloc[0][
+                    "hispanic_or_latino_hawaiian_total"
+                ]
+                hawaiian = county_only_df.iloc[0]["hawaiian_total"] - hawaiian_hispanic
+                values.append(hawaiian)
+                values.append(hawaiian_hispanic)
+
+                other_hispanic = county_only_df.iloc[0][
+                    "hispanic_or_latino_some_other_race_total"
+                ]
+                other = (
+                    county_only_df.iloc[0]["some_other_race_alone_total"]
+                    - other_hispanic
+                )
+                values.append(other)
+                values.append(other_hispanic)
+
+                two_or_more_hispanic = county_only_df.iloc[0][
+                    "hispanic_or_latino_two_or_more_races_total"
+                ]
+                two_or_more = (
+                    county_only_df.iloc[0]["two_more_races_total"]
+                    - two_or_more_hispanic
+                )
+                values.append(two_or_more)
+                values.append(two_or_more_hispanic)
+
+                data_dict = {
+                    "Race": [
+                        "White",
+                        "White",
+                        "Black",
+                        "Black",
+                        "Native American",
+                        "Native American",
+                        "Asian",
+                        "Asian",
+                        "Hawaiian",
+                        "Hawaiian",
+                        "Other",
+                        "Other",
+                        "Two or More",
+                        "Two or More",
+                    ],
+                    "Ethnicity": [
+                        # white
+                        "Non Hispanic/Latino",
+                        "Hispanic/Latino",
+                        # black
+                        "Non Hispanic/Latino",
+                        "Hispanic/Latino",
+                        # native
+                        "Non Hispanic/Latino",
+                        "Hispanic/Latino",
+                        # asian
+                        "Non Hispanic/Latino",
+                        "Hispanic/Latino",
+                        # hawaiian
+                        "Non Hispanic/Latino",
+                        "Hispanic/Latino",
+                        # other
+                        "Non Hispanic/Latino",
+                        "Hispanic/Latino",
+                        # two or more
+                        "Non Hispanic/Latino",
+                        "Hispanic/Latino",
+                    ],
+                    "Population": values,
+                }
+
+                viz_df = pd.DataFrame(data_dict)
+
+                fig = px.sunburst(
+                    viz_df,
+                    path=["Race", "Ethnicity"],
+                    values="Population",
+                    color="Race",
                     color_discrete_sequence=px.colors.sequential.Blues_r,
                 )
 
-                fig.update_layout(legend=dict(orientation="h"))
-
-                fig.update_traces(hovertemplate="<b>%{label}</b>")
-
-                st.plotly_chart(fig)  # ,use_container_width=False)
+                st.plotly_chart(fig, use_container_width=False)
 
             #############################
             # Strong and Healthy Families
