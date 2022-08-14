@@ -166,10 +166,34 @@ def show_county_picker_page():
                     + choice3 / 100 * ranking_df[new_names[2]]
                 )
 
-                sorted_ranking_df = ranking_df.sort_values(
-                    "ranking", ascending=False
-                ).head(5)
                 c = get_map(ranking_df)
                 st.title("Ranked Counties Based on Selected Preferred Metrics")
                 st.altair_chart(c)
-                st.dataframe(sorted_ranking_df)
+
+                sorted_ranking_df = ranking_df.sort_values(
+                    "ranking", ascending=False
+                ).head(5)
+
+                def get_table_url(row):
+                    # need to add the target="self" otherwise there is some magic that automatically sets it to _blank
+                    row["NAME"] = (
+                        f'<a href="{get_county_details_url()+str(row["FIPS"])}" target="_self">'
+                        + str(row["NAME"])
+                        + "</a>"
+                    )
+                    row["Score"] = "{0:,.3f}".format(row["ranking"])
+                    return row
+
+                sorted_ranking_df["Score"] = ""
+                sorted_ranking_df = sorted_ranking_df.apply(get_table_url, axis=1)
+                sorted_ranking_df = sorted_ranking_df[["NAME", "Score"]]
+
+                sorted_ranking_df.columns = ["Name", "Score"]
+
+                st.markdown("### County Rankings")
+
+                tbl = sorted_ranking_df.to_html(
+                    escape=False, index=False, justify="left"
+                )
+
+                st.markdown(tbl, unsafe_allow_html=True)
