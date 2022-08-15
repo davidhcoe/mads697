@@ -284,6 +284,13 @@ def show_county_details_page():
                         "Source: ACS 5-year data, 2019",
                         unsafe_allow_html=True,
                     )
+                    st.markdown(
+                        '*Financial security*<br>'
+                        "Description: Share of Share of households with debt in collections<br>"
+                        '''Source: Alexander Carther, Kassandra Martinchek, Breno Braga, Signe-Mary McKernan, and Caleb Quakenbush. 2021. 
+                        Debt in America 2022. Accessible from <a href="https://datacatalog.urban.org/dataset/debt-america-2022">https://datacatalog.urban.org/dataset/debt-america-2022></a>''',
+                        unsafe_allow_html=True,
+                    )
 
             with housing:
 
@@ -544,6 +551,12 @@ def show_county_details_page():
                         "Notes: Converted the transit trips index (hh6_transit_trips_renters) given to percentile ranked nationally "
                         "and inverted the transity cost index (hh6_t_renters) then converted to a percentile ranked nationally.<br>"
                         "Interpretation: Higher scores reflect better access to public transportation.",
+                        unsafe_allow_html=True,
+                    )
+                    st.markdown(
+                        '*Air Quality Index*<br>'
+                        "Description: AQI is an index used to report the daily air quality. The yearly median value is used here.<br>"
+                        'Source: <a href="https://aqs.epa.gov/aqsweb/airdata/download_files.html">Environmental Protection Agengy</a>',
                         unsafe_allow_html=True,
                     )
 
