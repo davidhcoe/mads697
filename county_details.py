@@ -288,7 +288,7 @@ def show_county_details_page():
                         '*Financial security*<br>'
                         "Description: Share of Share of households with debt in collections<br>"
                         '''Source: Alexander Carther, Kassandra Martinchek, Breno Braga, Signe-Mary McKernan, and Caleb Quakenbush. 2021. 
-                        Debt in America 2022. Accessible from <a href="https://datacatalog.urban.org/dataset/debt-america-2022">https://datacatalog.urban.org/dataset/debt-america-2022></a>''',
+                        Debt in America 2022. Accessible from <a href="https://datacatalog.urban.org/dataset/debt-america-2022">https://datacatalog.urban.org/dataset/debt-america-2022</a>''',
                         unsafe_allow_html=True,
                     )
 
