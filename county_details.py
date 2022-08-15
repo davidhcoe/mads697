@@ -227,6 +227,16 @@ def show_county_details_page():
                         "${0:,.0f}",
                     )
 
+                    st.markdown("##### Financial security")
+                    get_metric(
+                        "Share of Households with Debt in Collections",
+                        "debt_all",
+                        county_only_df,
+                        averages,
+                        "{0:.2%}",
+                        delta_color="inverse",
+                    )
+
                 with col2:
 
                     categories = [
@@ -453,6 +463,15 @@ def show_county_details_page():
                         county_only_df,
                         averages,
                         "{0:.2f}",
+                    )
+                    st.markdown("##### Environmental quality")
+                    get_metric(
+                        "Air Quality Index",
+                        "AQI",
+                        county_only_df,
+                        averages,
+                        "{0:.2f}",
+                        delta_color="inverse",
                     )
 
                 with col2:

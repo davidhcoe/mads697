@@ -25,6 +25,7 @@ INTEGER_METRICS = [
     "median_family_income_indigenous",
     "median_family_income_asian",
     "median_family_income_hispanic",
+    "AQI",
 ]
 
 PERCENT_METRICS = [
@@ -57,6 +58,7 @@ PERCENT_METRICS = [
     "asian_employed_16_64",
     "some_other_race_alone_employed_16_64",
     "two_or_more_race_employed_16_64",
+    "debt_all",
 ]
 
 HUMAN_READABLE_METRICS = {
@@ -118,6 +120,8 @@ HUMAN_READABLE_METRICS = {
     "median_family_income_indigenous": "Median Household Income, Race: Indigenous",
     "median_family_income_asian": "Median Household Income, Race: Asian",
     "median_family_income_hispanic": "Median Household Income, Race: Hispanic",
+    "AQI": "Air Quality Index",
+    "debt_all": "Share of Households with Debt in Collections",
 }
 
 PREFERRED_METRICS = {
@@ -140,6 +144,8 @@ PREFERRED_METRICS = {
     "Median Household Income": "median_family_income",
     "20th Percentile Household Income": "income_20_percentile",
     "80th Percentile Household Income": "income_80_percentile",
+    "Share of Households with Debt in Collections": "debt_all", 
+    "Air Quality Index": "AQI",
 }
 
 IDEAL_SCORES = {
@@ -282,6 +288,8 @@ def get_dataframe():
         "transit_trips_index",
         "transit_low_cost_index",
         "crime_rate",
+        "AQI",
+        "debt_all",
     ]
 
     for f in feature_names:
