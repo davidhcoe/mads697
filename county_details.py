@@ -22,7 +22,7 @@ def show_county_details_page():
     fips_code = get_parameter(FIPS_PARAMETER, "")
 
     if len(fips_code) == 0 or fips_code.isnumeric() == False:
-        st.title(f"Cant find any data for {fips_code}")
+        st.title(f"Please specify a valid FIPS code to get county details")
     else:
         # build the main content for the report on the page
 
@@ -732,18 +732,3 @@ def show_county_details_page():
                             """,
                         unsafe_allow_html=True,
                     )
-                # with st.expander("Source details"):
-                #     st.markdown('*People in Poverty*<br>'\
-                #         'Description: Share of residents experiencing poverty living in high-poverty neighborhoods<br>' \
-                #         'Source: ACS 5-year data',unsafe_allow_html=True)
-
-                #     st.markdown('*Racial Diversity*<br>' \
-                #         "Description: Neighborhood exposure index, or share of a person's neighbors who are people of other races and ethnicities<br>" \
-                #         'Source: ACS 5-year data<br>' \
-                #         'Notes: Used the <a href="https://censusscope.org/about_exposure.html">Census Scope</a> Exposure Index Formula to calculate the exposure index for each race at the tract level.',unsafe_allow_html=True)
-
-                #     st.markdown('*Transportation access*<br>' \
-                #         'Description: Transit trips index<br>' \
-                #         'Source: Department of Housing and Urban Development Accessed via <a href="https://hudgis-hud.opendata.arcgis.com/datasets/location-affordability-index-v-3/api">API</a><br>' \
-                #         'Assumptions: Converted the index (hh6_transit_trips_renters)  given to percentile ranked nationally<br>' \
-                #         'Interpretation: Higher scores reflect better access to public transportation.',  unsafe_allow_html=True)
