@@ -30,7 +30,7 @@ def show_county_picker_page():
     df["HPSA Score"] = df["HPSA Score"].fillna(
         0
     )  # I think this means that it doesn't have HPSA shortage
-    county_display_df = df[["NAME", "FIPS"]].copy()
+    county_display_df = df[["NAME", "FIPS"]]
     county_display_df.columns = ["NAME", "id"]
     county_display_df["url"] = ""
     county_display_df = county_display_df.apply(get_url, axis=1)
@@ -91,6 +91,8 @@ def show_county_picker_page():
         "median_family_income": df["median_family_income"].max(),
         "income_20_percentile": df["income_20_percentile"].max(),
         "income_80_percentile": df["income_80_percentile"].max(),
+        "AQI": df["AQI"].min(),
+        "debt_all": df["debt_all"].min(),
     }
 
     st.markdown("Desired County Population Range")
@@ -164,6 +166,8 @@ def show_county_picker_page():
                     "black_exposure",
                     "native_american_exposure",
                     "proportion_high_poverty_neighborhood",
+                    "AQI", 
+                    "debt_all",
                 ]
 
                 mean_values = df[metrics].mean()
