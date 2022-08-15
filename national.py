@@ -14,7 +14,7 @@ from utilities import (
 
 def show_national_page():
     """
-    executes the code needed for the county_details page to display
+    executes the code needed for the national page to display
     """
     url = get_county_details_url()
 
