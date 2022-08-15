@@ -23,7 +23,7 @@ def show_national_page():
         return row
 
     counties_df = pd.read_csv("counties_merged.csv")
-    county_display_df = counties_df[["NAME", "FIPS"]]
+    county_display_df = counties_df[["NAME", "FIPS"]].copy()
     county_display_df.columns = ["NAME", "id"]
     county_display_df["url"] = ""
     county_display_df = county_display_df.apply(get_url, axis=1)
