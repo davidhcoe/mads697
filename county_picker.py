@@ -30,7 +30,7 @@ def show_county_picker_page():
     df["HPSA Score"] = df["HPSA Score"].fillna(
         0
     )  # I think this means that it doesn't have HPSA shortage
-    county_display_df = df[["NAME", "FIPS"]]
+    county_display_df = df[["NAME", "FIPS"]].copy()
     county_display_df.columns = ["NAME", "id"]
     county_display_df["url"] = ""
     county_display_df = county_display_df.apply(get_url, axis=1)
