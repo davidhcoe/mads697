@@ -6,8 +6,6 @@ import json
 import numpy as np
 from typing import Any, Dict
 
-WIKI_REQUEST = "http://en.wikipedia.org/w/api.php?action=query&prop=pageimages&format=json&piprop=original&titles="
-
 METRIC_PARAMETER = "metric"
 FIPS_PARAMETER = "fips"
 
@@ -174,14 +172,22 @@ def get_wiki_image(search_term):
     search_term: the term to search on Wikipedia
     """
     try:
+        wiki_url = "http://en.wikipedia.org/w/api.php?action=query&prop=pageimages&format=json&piprop=original&titles="
+
         result = wikipedia.search(search_term, results=1)
         wikipedia.set_lang("en")
         wkpage = wikipedia.WikipediaPage(title=result[0])
         title = wkpage.title
-        response = requests.get(WIKI_REQUEST + title)
+        response = requests.get(wiki_url + title)
         json_data = json.loads(response.text)
+
         img_link = list(json_data["query"]["pages"].values())[0]["original"]["source"]
-        return img_link
+
+        # tif doesn't present well in the browser
+        if img_link[-4:].lower() == ".tif":
+            return 0
+        else:
+            return img_link
     except:
         return 0
 

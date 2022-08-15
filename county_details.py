@@ -65,8 +65,13 @@ def show_county_details_page():
                     value="{:,}".format(int(county_only_df["population"].values[0])),
                 )
 
+                st.markdown(
+                    "*Race and ethnicity are numbers determined by responsdents who self-identified during the 2019 American Community Survey.*"
+                )
+
             with col2:
 
+                # build the population sunburst
                 values = []
 
                 white_hispanic = county_only_df.iloc[0][
@@ -150,7 +155,7 @@ def show_county_details_page():
                         # black
                         "Non Hispanic/Latino",
                         "Hispanic/Latino",
-                        # native
+                        # native american
                         "Non Hispanic/Latino",
                         "Hispanic/Latino",
                         # asian
@@ -178,6 +183,8 @@ def show_county_details_page():
                     color="Race",
                     color_discrete_sequence=px.colors.sequential.Blues_r,
                 )
+
+                fig.update_layout(margin=dict(b=0, l=0, r=0, t=40))
 
                 st.plotly_chart(fig, use_container_width=False)
 
