@@ -93,12 +93,19 @@ def show_county_picker_page():
         "income_80_percentile": df["income_80_percentile"].max(),
     }
 
+    st.markdown("Desired County Population Range")
+    st.caption("The smallest county is 66 people, and the largest county is 10 million people")
+
+    population_min, population_max = st.slider("", 0, 5000000, (1, 5000000), step=10000)
+    if population_max == 5000000:
+        population_max = 110000000
+
     options = [0, 10, 20, 30, 40, 50, 60, 70, 80, 100]
 
     col1, col2 = st.columns(2)
 
     with col1:
-        choice1_select = st.selectbox("Option 1", feature_names.keys())
+        choice1_select = st.selectbox("Metric 1", feature_names.keys())
 
     with col2:
         choice1 = st.select_slider("", options=options)
@@ -106,7 +113,7 @@ def show_county_picker_page():
     col1, col2 = st.columns(2)
 
     with col1:
-        choice2_select = st.selectbox("Option 2", feature_names.keys())
+        choice2_select = st.selectbox("Metric 2", feature_names.keys())
 
     with col2:
         choice2 = st.select_slider("", key="2", options=options)
@@ -114,7 +121,7 @@ def show_county_picker_page():
     col1, col2 = st.columns(2)
 
     with col1:
-        choice3_select = st.selectbox("Option 3", feature_names.keys())
+        choice3_select = st.selectbox("Metric 3", feature_names.keys())
 
     with col2:
         choice3 = st.select_slider("", key="3", options=options)
@@ -130,7 +137,6 @@ def show_county_picker_page():
             ):
                 st.write("Your choices must be unique")
             else:
-
                 input1, input2, input3 = (
                     feature_names[choice1_select],
                     feature_names[choice2_select],
@@ -162,6 +168,8 @@ def show_county_picker_page():
 
                 mean_values = df[metrics].mean()
                 df[metrics] = df[metrics].fillna(mean_values)
+
+                df = df[(df['population'] >= population_min) & (df['population'] <= population_max)]
 
                 inputs = [input1, input2, input3]
                 ideals = [
