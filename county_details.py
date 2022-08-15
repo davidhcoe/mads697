@@ -22,7 +22,7 @@ def show_county_details_page():
     fips_code = get_parameter(FIPS_PARAMETER, "")
 
     if len(fips_code) == 0 or fips_code.isnumeric() == False:
-        st.title(f"Please specify a valid FIPS code to get county details")
+        st.title("Please specify a valid FIPS code to get county details")
     else:
         # build the main content for the report on the page
 
@@ -44,7 +44,6 @@ def show_county_details_page():
                     f'<div class="container"><div class="image"><img src="{wiki_image}" alt="Wikipedia image of {name}"/></div><div class="text"><h1>{name}</h1><a href="#population">Population</a> | <a href="#strong-and-healthy-families">Strong and Healthy Families</a> | <a href="#supportive-communities">Supportive Communities</a> | <a href="#opportunities-to-learn-and-earn">Opportunities to Learn and Earn</a></div>',
                     unsafe_allow_html=True,
                 )
-                # st.markdown(f'<img src="" width="300" height="225" alt="Wikipedia image of {name}"/>', unsafe_allow_html=True)
             else:
                 st.title(f"{name}")
                 st.markdown(
