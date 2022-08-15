@@ -425,8 +425,12 @@ def show_county_details_page():
                 with st.expander("Source details"):
                     st.markdown(
                         "Description: Share of the voting eligible population who turn out to vote<br>"
-                        'Source: MIT Election Data and Science Lab for 2020 Election pulled from the <a href="https://dataverse.harvard.edu/file.xhtml?fileId=6100388&version=1.1">Harvard Dataverse</a> aand American Community Survey 2020 5-year data<br>'
-                        "Notes: This measures the share of the voting-eligible population who voted in the most recent presidential election.",
+                        '''Source: MIT Election Data and Science Lab for 2020 Election pulled from the 
+                        <a href="https://dataverse.harvard.edu/file.xhtml?fileId=6100388&version=1.1">Harvard Dataverse</a>
+                        and American Community Survey 2020 5-year data<br>
+                        MIT Election Data and Science Lab, 2022, "U.S. President Precinct-Level Returns 2020",
+                        <a href="https://doi.org/10.7910/DVN/JXPREB">https://doi.org/10.7910/DVN/JXPREB</a>, Harvard Dataverse, V1<br>'''
+                        "Notes: This measures the share of the voting-eligible population who voted in the 2020 presidential election.",
                         unsafe_allow_html=True,
                     )
 
