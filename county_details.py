@@ -41,13 +41,13 @@ def show_county_details_page():
                     unsafe_allow_html=True,
                 )
                 st.markdown(
-                    f'<div class="container"><div class="image"><img src="{wiki_image}" alt="Wikipedia image of {name}"/></div><div class="text"><h1>{name}</h1><a href="#population">Population</a> | <a href="#strong-and-healthy-families">Strong and Healthy Families</a> | <a href="#supportive-communities">Supportive Communities</a> | <a href="#opportunities-to-learn-and-earn">Opportunities to Learn and Earn</a></div>',
+                    f'<div class="container"><div class="image"><img src="{wiki_image}" alt="Wikipedia image of {name}"/></div><div class="text"><h1>{name}</h1><a href="#population">Population</a>  | <a href="#supportive-communities">Supportive Communities</a> | <a href="#strong-and-healthy-families">Strong and Healthy Families</a> | <a href="#opportunities-to-learn-and-earn">Opportunities to Learn and Earn</a></div>',
                     unsafe_allow_html=True,
                 )
             else:
                 st.title(f"{name}")
                 st.markdown(
-                    '<a href="#population">Population</a> | <a href="#strong-and-healthy-families">Strong and Healthy Families</a> | <a href="#supportive-communities">Supportive Communities</a> | <a href="#opportunities-to-learn-and-earn">Opportunities to Learn and Earn</a>',
+                    '<a href="#population">Population</a> | <a href="#supportive-communities">Supportive Communities</a> | <a href="#strong-and-healthy-families">Strong and Healthy Families</a> | <a href="#opportunities-to-learn-and-earn">Opportunities to Learn and Earn</a>',
                     unsafe_allow_html=True,
                 )
 
@@ -186,6 +186,213 @@ def show_county_details_page():
                 fig.update_layout(margin=dict(b=0, l=0, r=0, t=40))
 
                 st.plotly_chart(fig, use_container_width=False)
+
+            #############################
+            # Supportive Communities
+            #############################
+
+            st.header("Supportive Communities")
+
+            neighborhoods, local_gov, safety = st.tabs(
+                ["Neighborhoods", "Local Governance", "Safety"]
+            )
+            with neighborhoods:
+
+                col1, col2 = st.columns([1.5, 2.5])
+
+                with col1:
+
+                    st.markdown("##### Economic inclusion")
+
+                    st.metric(
+                        "People in Poverty",
+                        value="{:,}".format(
+                            int(county_only_df["all_in_poverty"].values[0])
+                        ),
+                        delta_color="inverse",
+                    )
+
+                    get_metric(
+                        "Proportion high poverty neighborhood",
+                        "proportion_high_poverty_neighborhood",
+                        county_only_df,
+                        averages,
+                        "{0:.0%}",
+                        delta_color="inverse",
+                    )
+
+                    st.markdown("##### Transportation Access")
+
+                    get_metric(
+                        "Transit Trips Index",
+                        "transit_trips_index",
+                        county_only_df,
+                        averages,
+                        "{0:.2f}",
+                    )
+                    get_metric(
+                        "Transit Trips Cost",
+                        "transit_low_cost_index",
+                        county_only_df,
+                        averages,
+                        "{0:.2f}",
+                    )
+                    st.markdown("##### Environmental quality")
+                    get_metric(
+                        "Air Quality Index",
+                        "AQI",
+                        county_only_df,
+                        averages,
+                        "{0:.2f}",
+                        delta_color="inverse",
+                    )
+
+                with col2:
+
+                    categories = [
+                        "hispanic_or_latino_exposure",
+                        "white_exposure",
+                        "black_exposure",
+                        "native_american_exposure",
+                        "asian_exposure",
+                        "hawaiian_exposure",
+                        "some_other_race_alone_exposure",
+                        "two_more_races_exposure",
+                    ]
+
+                    category_names = {
+                        "white_exposure": "White",
+                        "black_exposure": "Black",
+                        "native_american_exposure": "Native American",
+                        "asian_exposure": "Asian",
+                        "hispanic_or_latino_exposure": "Hispanic/Latino",
+                        "hawaiian_exposure": "Hawaiian",
+                        "some_other_race_alone_exposure": "Other race",
+                        "two_more_races_exposure": "Two or more races",
+                    }
+
+                    labels = []
+                    values = []
+
+                    for c in categories:
+                        value = county_only_df[c].values[0]
+
+                        if value > 0:
+                            labels.append(category_names[c])
+                            values.append(value)
+
+                    chart_df = pd.DataFrame({"race": labels, "value": values})
+
+                    fig = px.bar(
+                        chart_df,
+                        x="race",
+                        y="value",
+                        title="Racial Exposure Index",
+                        color_discrete_sequence=px.colors.sequential.Blues_r,
+                        labels=dict(race="", value=""),
+                    )
+
+                    st.plotly_chart(fig, use_container_width=False)
+
+                with st.expander("Source details"):
+                    st.markdown(
+                        "*People in Poverty*<br>"
+                        "Description:  Share of county residents experiencing poverty that live in high-poverty neighborhoods (a neighborhood is defined as a census tract).  A high-poverty neighborhood is one in which over 40 percent of the residents are experiencing poverty.<br>"
+                        "Source: American Community Survey (ACS) 5-year data, 2019",
+                        unsafe_allow_html=True,
+                    )
+
+                    st.markdown(
+                        "*Racial Diversity*<br>"
+                        "Description: Neighborhood exposure index, or share of a person’s neighbors who are people of other races and ethnicities<br>"
+                        "Source: ACS 5-year data, 2019<br>"
+                        """Notes: This is a set of metrics constructed separately for each racial/ethnic group and reports the average share of that 
+                        group's neighbors who are members of other racial/ethnic groups. This is a type of exposure index. For example, an exposure 
+                        index of 80% in “Hispanic or Latino“' means that the average Hispanic or Latino resident has 80% of their neighbors within a 
+                        census tract who have a different ethnicity than them. The higher the value, the more exposed to people of different races/ethnicities.
+                        The exposure index was calculated using the <a href="https://censusscope.org/about_exposure.html">Census Scope</a> Exposure Index Formula
+                         for each race at the tract level.""",
+                        unsafe_allow_html=True,
+                    )
+
+                    st.markdown(
+                        "*Transportation access*<br>"
+                        "Description: Transit Index<br>"
+                        'Source: Department of Housing and Urban Development Accessed via <a href="https://hudgis-hud.opendata.arcgis.com/datasets/location-affordability-index-v-3/api">API</a><br>'
+                        "Notes: Converted the transit trips index (hh6_transit_trips_renters) given to percentile ranked nationally "
+                        "and inverted the transity cost index (hh6_t_renters) then converted to a percentile ranked nationally.<br>"
+                        "Interpretation: Higher scores reflect better access to public transportation.",
+                        unsafe_allow_html=True,
+                    )
+                    st.markdown(
+                        '*Air Quality Index*<br>'
+                        "Description: AQI is an index used to report the daily air quality. The yearly median value is used here.<br>"
+                        'Source: <a href="https://aqs.epa.gov/aqsweb/airdata/download_files.html">Environmental Protection Agengy</a>',
+                        unsafe_allow_html=True,
+                    )
+
+
+            with local_gov:
+
+                st.markdown("##### Political participation")
+
+                get_metric(
+                    "Eligible population who turn out to vote",
+                    "proportion_voter",
+                    county_only_df,
+                    averages,
+                    "{:.0%}",
+                )
+
+                with st.expander("Source details"):
+                    st.markdown(
+                        "Description: Share of the voting eligible population who turn out to vote<br>"
+                        '''Source: MIT Election Data and Science Lab for 2020 Election pulled from the 
+                        <a href="https://dataverse.harvard.edu/file.xhtml?fileId=6100388&version=1.1">Harvard Dataverse</a>
+                        and American Community Survey 2020 5-year data<br>
+                        MIT Election Data and Science Lab, 2022, "U.S. President Precinct-Level Returns 2020",
+                        <a href="https://doi.org/10.7910/DVN/JXPREB">https://doi.org/10.7910/DVN/JXPREB</a>, Harvard Dataverse, V1<br>'''
+                        "Notes: This measures the share of the voting-eligible population who voted in the 2020 presidential election.",
+                        unsafe_allow_html=True,
+                    )
+
+
+            with safety:
+
+                col1, col2 = st.columns(2)
+
+                with col1:
+                    st.markdown("##### Exposure to crime")
+                    get_metric(
+                        "Violent crime",
+                        "crime_rate",
+                        county_only_df,
+                        averages,
+                        "{0:.2f}",
+                        delta_color="inverse",
+                    )
+                    st.markdown("*per 100k residents*")
+
+                with col2:
+                    st.markdown("##### Overly punitive policing")
+                    get_metric(
+                        "Juvenile Crime Rate",
+                        "juvenile_crime_rate",
+                        county_only_df,
+                        averages,
+                        "{0:.2f}",
+                        delta_color="inverse",
+                    )
+                    st.markdown("*per 100k residents*")
+
+                with st.expander("Source details"):
+                    st.markdown(
+                        "*Exposure to crime*<br>"
+                        "Description: Rates of reported violent crime<br>"
+                        "Source: Federal Bureau of Investigations (FBI) Uniform Crime Statistic (UCR) Crime in the United States, 2019, accessed via <a href='http://api.usa.gov/'>api.usa.gov</a>; American Community Survey 5-year data, 2019<br>"
+                        "Notes:  Violent crime is composed of four offenses: murder and nonnegligent manslaughter, rape, robbery, and aggravated assault. Rates are calculated as the number of reported crimes per 100,000 people. The FBI cautions using UCR data to rank or compare locales because this can create, ‘misleading perceptions which adversely affect geographic entities and their residents.’",
+                        unsafe_allow_html=True,
+                    )
 
             #############################
             # Strong and Healthy Families
@@ -400,211 +607,7 @@ def show_county_details_page():
                         unsafe_allow_html=True,
                     )
 
-            #############################
-            # Supportive Communities
-            #############################
 
-            st.header("Supportive Communities")
-
-            local_gov, neighborhoods, safety = st.tabs(
-                ["Local Governance", "Neighborhoods", "Safety"]
-            )
-
-            with local_gov:
-
-                st.markdown("##### Political participation")
-
-                get_metric(
-                    "Eligible population who turn out to vote",
-                    "proportion_voter",
-                    county_only_df,
-                    averages,
-                    "{:.0%}",
-                )
-
-                with st.expander("Source details"):
-                    st.markdown(
-                        "Description: Share of the voting eligible population who turn out to vote<br>"
-                        '''Source: MIT Election Data and Science Lab for 2020 Election pulled from the 
-                        <a href="https://dataverse.harvard.edu/file.xhtml?fileId=6100388&version=1.1">Harvard Dataverse</a>
-                        and American Community Survey 2020 5-year data<br>
-                        MIT Election Data and Science Lab, 2022, "U.S. President Precinct-Level Returns 2020",
-                        <a href="https://doi.org/10.7910/DVN/JXPREB">https://doi.org/10.7910/DVN/JXPREB</a>, Harvard Dataverse, V1<br>'''
-                        "Notes: This measures the share of the voting-eligible population who voted in the 2020 presidential election.",
-                        unsafe_allow_html=True,
-                    )
-
-            with neighborhoods:
-
-                col1, col2 = st.columns([1.5, 2.5])
-
-                with col1:
-
-                    st.markdown("##### Economic inclusion")
-
-                    st.metric(
-                        "People in Poverty",
-                        value="{:,}".format(
-                            int(county_only_df["all_in_poverty"].values[0])
-                        ),
-                        delta_color="inverse",
-                    )
-
-                    get_metric(
-                        "Proportion high poverty neighborhood",
-                        "proportion_high_poverty_neighborhood",
-                        county_only_df,
-                        averages,
-                        "{0:.0%}",
-                        delta_color="inverse",
-                    )
-
-                    st.markdown("##### Transportation Access")
-
-                    get_metric(
-                        "Transit Trips Index",
-                        "transit_trips_index",
-                        county_only_df,
-                        averages,
-                        "{0:.2f}",
-                    )
-                    get_metric(
-                        "Transit Trips Cost",
-                        "transit_low_cost_index",
-                        county_only_df,
-                        averages,
-                        "{0:.2f}",
-                    )
-                    st.markdown("##### Environmental quality")
-                    get_metric(
-                        "Air Quality Index",
-                        "AQI",
-                        county_only_df,
-                        averages,
-                        "{0:.2f}",
-                        delta_color="inverse",
-                    )
-
-                with col2:
-
-                    categories = [
-                        "hispanic_or_latino_exposure",
-                        "white_exposure",
-                        "black_exposure",
-                        "native_american_exposure",
-                        "asian_exposure",
-                        "hawaiian_exposure",
-                        "some_other_race_alone_exposure",
-                        "two_more_races_exposure",
-                    ]
-
-                    category_names = {
-                        "white_exposure": "White",
-                        "black_exposure": "Black",
-                        "native_american_exposure": "Native American",
-                        "asian_exposure": "Asian",
-                        "hispanic_or_latino_exposure": "Hispanic/Latino",
-                        "hawaiian_exposure": "Hawaiian",
-                        "some_other_race_alone_exposure": "Other race",
-                        "two_more_races_exposure": "Two or more races",
-                    }
-
-                    labels = []
-                    values = []
-
-                    for c in categories:
-                        value = county_only_df[c].values[0]
-
-                        if value > 0:
-                            labels.append(category_names[c])
-                            values.append(value)
-
-                    chart_df = pd.DataFrame({"race": labels, "value": values})
-
-                    fig = px.bar(
-                        chart_df,
-                        x="race",
-                        y="value",
-                        title="Racial Exposure Index",
-                        color_discrete_sequence=px.colors.sequential.Blues_r,
-                        labels=dict(race="", value=""),
-                    )
-
-                    st.plotly_chart(fig, use_container_width=False)
-
-                with st.expander("Source details"):
-                    st.markdown(
-                        "*People in Poverty*<br>"
-                        "Description:  Share of county residents experiencing poverty that live in high-poverty neighborhoods (a neighborhood is defined as a census tract).  A high-poverty neighborhood is one in which over 40 percent of the residents are experiencing poverty.<br>"
-                        "Source: American Community Survey (ACS) 5-year data, 2019",
-                        unsafe_allow_html=True,
-                    )
-
-                    st.markdown(
-                        "*Racial Diversity*<br>"
-                        "Description: Neighborhood exposure index, or share of a person’s neighbors who are people of other races and ethnicities<br>"
-                        "Source: ACS 5-year data, 2019<br>"
-                        """Notes: This is a set of metrics constructed separately for each racial/ethnic group and reports the average share of that 
-                        group's neighbors who are members of other racial/ethnic groups. This is a type of exposure index. For example, an exposure 
-                        index of 80% in “Hispanic or Latino“' means that the average Hispanic or Latino resident has 80% of their neighbors within a 
-                        census tract who have a different ethnicity than them. The higher the value, the more exposed to people of different races/ethnicities.
-                        The exposure index was calculated using the <a href="https://censusscope.org/about_exposure.html">Census Scope</a> Exposure Index Formula
-                         for each race at the tract level.""",
-                        unsafe_allow_html=True,
-                    )
-
-                    st.markdown(
-                        "*Transportation access*<br>"
-                        "Description: Transit Index<br>"
-                        'Source: Department of Housing and Urban Development Accessed via <a href="https://hudgis-hud.opendata.arcgis.com/datasets/location-affordability-index-v-3/api">API</a><br>'
-                        "Notes: Converted the transit trips index (hh6_transit_trips_renters) given to percentile ranked nationally "
-                        "and inverted the transity cost index (hh6_t_renters) then converted to a percentile ranked nationally.<br>"
-                        "Interpretation: Higher scores reflect better access to public transportation.",
-                        unsafe_allow_html=True,
-                    )
-                    st.markdown(
-                        '*Air Quality Index*<br>'
-                        "Description: AQI is an index used to report the daily air quality. The yearly median value is used here.<br>"
-                        'Source: <a href="https://aqs.epa.gov/aqsweb/airdata/download_files.html">Environmental Protection Agengy</a>',
-                        unsafe_allow_html=True,
-                    )
-
-            with safety:
-
-                col1, col2 = st.columns(2)
-
-                with col1:
-                    st.markdown("##### Exposure to crime")
-                    get_metric(
-                        "Violent crime",
-                        "crime_rate",
-                        county_only_df,
-                        averages,
-                        "{0:.2f}",
-                        delta_color="inverse",
-                    )
-                    st.markdown("*per 100k residents*")
-
-                with col2:
-                    st.markdown("##### Overly punitive policing")
-                    get_metric(
-                        "Juvenile Crime Rate",
-                        "juvenile_crime_rate",
-                        county_only_df,
-                        averages,
-                        "{0:.2f}",
-                        delta_color="inverse",
-                    )
-                    st.markdown("*per 100k residents*")
-
-                with st.expander("Source details"):
-                    st.markdown(
-                        "*Exposure to crime*<br>"
-                        "Description: Rates of reported violent crime<br>"
-                        "Source: Federal Bureau of Investigations (FBI) Uniform Crime Statistic (UCR) Crime in the United States, 2019, accessed via <a href='http://api.usa.gov/'>api.usa.gov</a>; American Community Survey 5-year data, 2019<br>"
-                        "Notes:  Violent crime is composed of four offenses: murder and nonnegligent manslaughter, rape, robbery, and aggravated assault. Rates are calculated as the number of reported crimes per 100,000 people. The FBI cautions using UCR data to rank or compare locales because this can create, ‘misleading perceptions which adversely affect geographic entities and their residents.’",
-                        unsafe_allow_html=True,
-                    )
 
             #############################
             # Opportunities to Learn and Earn
