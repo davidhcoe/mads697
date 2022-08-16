@@ -544,7 +544,12 @@ def show_county_details_page():
                         "*Racial Diversity*<br>"
                         "Description: Neighborhood exposure index, or share of a person’s neighbors who are people of other races and ethnicities<br>"
                         "Source: ACS 5-year data, 2019<br>"
-                        "Notes: This is a set of metrics constructed separately for each racial/ethnic group and reports the average share of that group's neighbors who are members of other racial/ethnic groups. This is a type of exposure index. For example, an exposure index of 80% in “Hispanic or Latino“' means that the average Hispanic or Latino resident has 80% of their neighbors within a census tract who have a different ethnicity than them. The higher the value, the more exposed to people of different races/ethnicities.",
+                        """Notes: This is a set of metrics constructed separately for each racial/ethnic group and reports the average share of that 
+                        group's neighbors who are members of other racial/ethnic groups. This is a type of exposure index. For example, an exposure 
+                        index of 80% in “Hispanic or Latino“' means that the average Hispanic or Latino resident has 80% of their neighbors within a 
+                        census tract who have a different ethnicity than them. The higher the value, the more exposed to people of different races/ethnicities.
+                        The exposure index was calculated using the <a href="https://censusscope.org/about_exposure.html">Census Scope</a> Exposure Index Formula
+                         for each race at the tract level.""",
                         unsafe_allow_html=True,
                     )
 
