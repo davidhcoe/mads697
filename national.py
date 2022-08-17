@@ -88,18 +88,40 @@ def show_national_page():
 
     col1, col2 = st.columns(2, gap="medium")
 
+    def get_table_url(row):
+        # need to add the target="_self" otherwise there is some magic that automatically sets it to _blank
+        row["NAME"] = (
+            f'<a href="{get_county_details_url()+str(row["FIPS"])}" target="_self">'
+            + str(row["NAME"])
+            + "</a>"
+        )
+        return row
+
+    counties_df = counties_df.apply(get_table_url, axis=1)
+
     with col1:
         st.header("5 Highest Counties")
-        st.dataframe(
+
+        highest_series = (
             counties_df.sort_values(by=metric, ascending=False)
-            .set_index("NAME")
-            .head(5)["Value"]
+            # .set_index("NAME")
+            .head(5)[["NAME", "Value"]]
         )
+
+        highest_series.columns = ["Name", "Value"]
+
+        tbl = highest_series.to_html(escape=False, index=False, justify="left")
+
+        st.markdown(tbl, unsafe_allow_html=True)
 
     with col2:
         st.header("5 Lowest Counties")
-        st.dataframe(
-            counties_df.sort_values(by=metric, ascending=True)
-            .set_index("NAME")
-            .head(5)["Value"]
-        )
+        lowest_series = counties_df.sort_values(by=metric, ascending=True).head(5)[
+            ["NAME", "Value"]
+        ]
+
+        lowest_series.columns = ["Name", "Value"]
+
+        tbl = lowest_series.to_html(escape=False, index=False, justify="left")
+
+        st.markdown(tbl, unsafe_allow_html=True)

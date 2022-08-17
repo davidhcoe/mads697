@@ -322,23 +322,20 @@ def show_county_details_page():
                         'Source: Department of Housing and Urban Development Accessed via <a href="https://hudgis-hud.opendata.arcgis.com/datasets/location-affordability-index-v-3/api">API</a><br>'
                         "Assumptions: Converted the index (hh6_transit_trips_renters)  given to percentile ranked nationally.<br>"
                         "<br>"
-                        
                         "Metric: Low transportation cost index<br>"
                         "Description: This index reflects local transportation costs as a share of renters’ incomes. It accounts for both transit and cars. This index is based on estimates of transportation costs for a three-person, single-parent family with income at 50 percent of the median income for renters for the county. Values are inverted and percentile ranked nationally, with values ranging from 0 to 100. The higher the value, the lower the cost of transportation in that neighborhood.<br>"
                         'Source: Department of Housing and Urban Development Accessed via <a href="https://hudgis-hud.opendata.arcgis.com/datasets/location-affordability-index-v-3/api">API</a><br>'
-                        "Assumptions:  Inverted the original metric (hh6_t_renters) then converted to a percentile ranked nationally.<br>"
-                        ,
+                        "Assumptions:  Inverted the original metric (hh6_t_renters) then converted to a percentile ranked nationally.<br>",
                         unsafe_allow_html=True,
                     )
                     st.markdown(
-                        '*Environmental Quality*<br>'
+                        "*Environmental Quality*<br>"
                         "Metric: Air quality index"
                         "Description: The Air Quality Index, AQI, is an index used to report the daily air quality. This is used to indicate how clear or polluted the air is. This could be used as an indicator for various health effects that might be a concern in the area. The AQI is based on a score from 0 to 500 where zero is the cleanest and 500 is the most polluted.<br>"
                         'Source: <a href="https://aqs.epa.gov/aqsweb/airdata/download_files.html">Environmental Protection Agengy</a><br>'
                         "Notes: Median AQI from 2019 dataset was used.<br>",
                         unsafe_allow_html=True,
                     )
-
 
             with local_gov:
 
@@ -356,15 +353,13 @@ def show_county_details_page():
                     st.markdown(
                         "Metric: Share of the voting eligible population who turn out to vote<br>"
                         "Description: This measures the share of the voting-eligible population who voted in the 2020 presidential election.<br>"
-                        '''Source: MIT Election Data and Science Lab for 2020 Election pulled from the 
+                        """Source: MIT Election Data and Science Lab for 2020 Election pulled from the 
                         <a href="https://dataverse.harvard.edu/file.xhtml?fileId=6100388&version=1.1">Harvard Dataverse</a>
                         and American Community Survey 2020 5-year data<br>
                         MIT Election Data and Science Lab, 2022, "U.S. President Precinct-Level Returns 2020",
-                        <a href="https://doi.org/10.7910/DVN/JXPREB">https://doi.org/10.7910/DVN/JXPREB</a>, Harvard Dataverse, V1<br>'''
-                        ,
+                        <a href="https://doi.org/10.7910/DVN/JXPREB">https://doi.org/10.7910/DVN/JXPREB</a>, Harvard Dataverse, V1<br>""",
                         unsafe_allow_html=True,
                     )
-
 
             with safety:
 
@@ -400,14 +395,12 @@ def show_county_details_page():
                         "Metric: Rates of reported violent crime<br>"
                         "Description:  Violent crime is composed of four offenses: murder and nonnegligent manslaughter, rape, robbery, and aggravated assault. Rates are calculated as the number of reported crimes per 100,000 people. The FBI cautions using UCR data to rank or compare locales because this can create, ‘misleading perceptions which adversely affect geographic entities and their residents'.<br>"
                         "Source: Federal Bureau of Investigations (FBI) Uniform Crime Statistic (UCR) Crime in the United States, 2019, accessed via <a href='http://api.usa.gov/'>api.usa.gov</a>; American Community Survey 5-year data, 2019<br>"
-
                         "<br>"
                         "*Overly punitive policing*<br>"
                         "Metric: Juvenile arrests for each County.<br>"
                         "Description: This metric includes both delinquency and status offenses. Delinquency referrals are made when youth violate criminal law. Status offenses are acts that are only illegal for youth under 18 (ex. Runaway, truancy, ungovernability, liquor law violation, tobacco violation). High rates of juvenile arrests provide strong indicator of system involvement and over policing.<br>"
                         "Source: Easy Access to State and County Juvenile Court Case Counts (EZACO) available from <a href='https://www.ojjdp.gov/ojstatbb/ezaco/'> https://www.ojjdp.gov/ojstatbb/ezaco/ </a>.<br>"
-                         "Notes: To calculate the rate of crime per 100k residents the ACS population data was used for each county. Juvenile arrests for each County. The 2019 data was used where available, but 2018 data was necessary for some states. The year of the data is noted by the states below. Not all states provide their data. States are noted if they did not have data in the last five years.<br>" 
-                       ,
+                        "Notes: To calculate the rate of crime per 100k residents the ACS population data was used for each county. Juvenile arrests for each County. The 2019 data was used where available, but 2018 data was necessary for some states. The year of the data is noted by the states below. Not all states provide their data. States are noted if they did not have data in the last five years.<br>",
                         unsafe_allow_html=True,
                     )
 
@@ -504,18 +497,18 @@ def show_county_details_page():
 
                 with st.expander("Source details"):
                     st.markdown(
-                        '*Income*<br>'
+                        "*Income*<br>"
                         "Metric: Household income at 20th, 50th, and 80th percentiles<br>"
                         "Description: This set of measures reflects financial resources available to low, middle, and high-income households as well as the extent of income inequality.<br>"
                         "Source: ACS 5-year data, 2019",
                         unsafe_allow_html=True,
                     )
                     st.markdown(
-                        '*Financial security*<br>'
+                        "*Financial security*<br>"
                         "Metric: Share of households with debt in collections<br>"
                         "Description: The measure accounts for the share of households in an area with debt that has progressed from being past due to being in collections.<br>"
-                        '''Source: Alexander Carther, Kassandra Martinchek, Breno Braga, Signe-Mary McKernan, and Caleb Quakenbush. 2021. 
-                        Debt in America 2022. Accessible from <a href="https://datacatalog.urban.org/dataset/debt-america-2022">https://datacatalog.urban.org/dataset/debt-america-2022</a>''',
+                        """Source: Alexander Carther, Kassandra Martinchek, Breno Braga, Signe-Mary McKernan, and Caleb Quakenbush. 2021. 
+                        Debt in America 2022. Accessible from <a href="https://datacatalog.urban.org/dataset/debt-america-2022">https://datacatalog.urban.org/dataset/debt-america-2022</a>""",
                         unsafe_allow_html=True,
                     )
 
@@ -629,12 +622,9 @@ def show_county_details_page():
                         "*Neonatal Health*<br>"
                         "Metric: Share of low-weight births<br>"
                         "Notes: The proportion of babies born weighing less than 5 pounds 8 ounces (<2,500 grams) out of all births.<br>"
-                        'Source: National Vital Statistics System, Natality on <a href="https://wonder.cdc.gov/natality-expanded-current.html">CDC WONDER</a>, Natality public use data 2019 <br>'
-                        ,
+                        'Source: National Vital Statistics System, Natality on <a href="https://wonder.cdc.gov/natality-expanded-current.html">CDC WONDER</a>, Natality public use data 2019 <br>',
                         unsafe_allow_html=True,
                     )
-
-
 
             #############################
             # Opportunities to Learn and Earn

@@ -96,7 +96,9 @@ def show_county_picker_page():
     }
 
     st.markdown("Desired County Population Range")
-    st.caption("The smallest county is 66 people, and the largest county is 10 million people")
+    st.caption(
+        "The smallest county is 66 people, and the largest county is 10 million people"
+    )
 
     population_min, population_max = st.slider("", 0, 5000000, (1, 5000000), step=10000)
     if population_max == 5000000:
@@ -166,14 +168,17 @@ def show_county_picker_page():
                     "black_exposure",
                     "native_american_exposure",
                     "proportion_high_poverty_neighborhood",
-                    "AQI", 
+                    "AQI",
                     "debt_all",
                 ]
 
                 mean_values = df[metrics].mean()
                 df[metrics] = df[metrics].fillna(mean_values)
 
-                df = df[(df['population'] >= population_min) & (df['population'] <= population_max)]
+                df = df[
+                    (df["population"] >= population_min)
+                    & (df["population"] <= population_max)
+                ]
 
                 inputs = [input1, input2, input3]
                 ideals = [

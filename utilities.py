@@ -144,7 +144,7 @@ PREFERRED_METRICS = {
     "Median Household Income": "median_family_income",
     "20th Percentile Household Income": "income_20_percentile",
     "80th Percentile Household Income": "income_80_percentile",
-    "Share of Households with Debt in Collections": "debt_all", 
+    "Share of Households with Debt in Collections": "debt_all",
     "Air Quality Index": "AQI",
 }
 
@@ -325,9 +325,13 @@ def get_metric(
         delta = value - averages[col_name]
 
     if np.isnan(value):
-        return st.metric(
-            name, value="n/a", delta="No data available", delta_color="off"
-        )
+
+        if col_name == "HPSA Score":
+            return st.metric(name, value="No shortages")
+        else:
+            return st.metric(
+                name, value="n/a", delta="No data available", delta_color="off"
+            )
 
     if format_pattern is not None:
         value = format_pattern.format(value)
