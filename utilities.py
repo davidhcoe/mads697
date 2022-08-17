@@ -327,7 +327,7 @@ def get_metric(
     if np.isnan(value):
 
         if col_name == "HPSA Score":
-            return st.metric(name, value="No shortages")
+            return st.metric(name, value="No shortage")
         else:
             return st.metric(
                 name, value="n/a", delta="No data available", delta_color="off"
