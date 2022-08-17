@@ -352,7 +352,7 @@ def show_county_details_page():
                         and American Community Survey 2020 5-year data<br>
                         MIT Election Data and Science Lab, 2022, "U.S. President Precinct-Level Returns 2020",
                         <a href="https://doi.org/10.7910/DVN/JXPREB">https://doi.org/10.7910/DVN/JXPREB</a>, Harvard Dataverse, V1<br>'''
-                        "Notes: This measures the share of the voting-eligible population who voted in the 2020 presidential election.",
+                        "Note: This measures the share of the voting-eligible population who voted in the 2020 presidential election.",
                         unsafe_allow_html=True,
                     )
 
@@ -390,7 +390,13 @@ def show_county_details_page():
                         "*Exposure to crime*<br>"
                         "Description: Rates of reported violent crime<br>"
                         "Source: Federal Bureau of Investigations (FBI) Uniform Crime Statistic (UCR) Crime in the United States, 2019, accessed via <a href='http://api.usa.gov/'>api.usa.gov</a>; American Community Survey 5-year data, 2019<br>"
-                        "Notes:  Violent crime is composed of four offenses: murder and nonnegligent manslaughter, rape, robbery, and aggravated assault. Rates are calculated as the number of reported crimes per 100,000 people. The FBI cautions using UCR data to rank or compare locales because this can create, ‘misleading perceptions which adversely affect geographic entities and their residents.’",
+                        "Notes:  Violent crime is composed of four offenses: murder and nonnegligent manslaughter, rape, robbery, and aggravated assault. Rates are calculated as the number of reported crimes per 100,000 people. The FBI cautions using UCR data to rank or compare locales because this can create, ‘misleading perceptions which adversely affect geographic entities and their residents.’<br>"
+                        "<br>"
+                        "*Overly punitive policing*<br>"
+                        "Description: Juvenile arrests for each County.<br>"
+                        "Source:Easy Access to State and County Juvenile Court Case Counts (EZACO) available from <a href='https://www.ojjdp.gov/ojstatbb/ezaco/'> https://www.ojjdp.gov/ojstatbb/ezaco/ </a>.<br>"
+                         "Notes: ACS population data was used to calculate the rate of crime per 100k residents of each county. This metric includes both delinquency and status offenses. Delinquency referrals are made when youth violate criminal law. Status offenses are acts that are only illegal for youth under 18 (ex. truancy, ungovernability, liquor law violation, tobacco violation). High rates of juvenile arrests provide strong indicator of system involvement and over policing.<br>" 
+                       ,
                         unsafe_allow_html=True,
                     )
 
@@ -413,7 +419,7 @@ def show_county_details_page():
                     st.markdown("##### Income")
 
                     get_metric(
-                        "Income 20%",
+                        "Income 20th Percentile",
                         "income_20_percentile",
                         county_only_df,
                         averages,
@@ -427,7 +433,7 @@ def show_county_details_page():
                         "${0:,.0f}",
                     )
                     get_metric(
-                        "Income 80%",
+                        "Income 80th Percentile",
                         "income_80_percentile",
                         county_only_df,
                         averages,
@@ -487,6 +493,7 @@ def show_county_details_page():
 
                 with st.expander("Source details"):
                     st.markdown(
+                        '*Income*<br>'
                         "Description: Household income at 20th, 50th, and 80th percentiles<br>"
                         "Source: ACS 5-year data, 2019",
                         unsafe_allow_html=True,
@@ -597,13 +604,15 @@ def show_county_details_page():
                 with st.expander("Source details"):
                     st.markdown(
                         "*Health Professional Shortage Area ranking for primary care providers*<br>"
-                        'Source: <a href="https://data.hrsa.gov/data/download">Health Resources & Services Administration</a>',
+                        'Source: <a href="https://data.hrsa.gov/data/download">Health Resources & Services Administration</a><br>'
+                        "Note: This attribute represents the Health Professional Shortage Area Score developed by the National Health Service Corps in determining priorities for assignment of clinicians. The scores range from 0 to 26 where the higher the score, the greater the priority.<br>",
                         unsafe_allow_html=True,
                     )
 
                     st.markdown(
                         "*Share of low-weight births*<br>"
-                        'Source: <a href="https://wonder.cdc.gov/natality-expanded-current.html">Center for Disease Control </a>',
+                        'Source: <a href="https://wonder.cdc.gov/natality-expanded-current.html">Center for Disease Control </a><br>'
+                        "Notes: The proportion of babies born weighing less than 5 pounds 8 ounces (<2,500 grams) out of all births.<br>",
                         unsafe_allow_html=True,
                     )
 
