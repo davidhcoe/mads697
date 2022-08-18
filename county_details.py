@@ -294,11 +294,14 @@ def show_county_details_page():
 
                     st.plotly_chart(fig, use_container_width=False)
 
-                    st.markdown('<style>.stVideo {margin-left: 80px; padding: 6px; border: 2px solid #ddd} </style>',unsafe_allow_html=True )
-                    video_file = open('Racial_Ethnic Exposure Index.mp4', 'rb')
+                    st.markdown(
+                        "<style>.stVideo {margin-left: 80px; padding: 6px; border: 2px solid #ddd} </style>",
+                        unsafe_allow_html=True,
+                    )
+                    video_file = open("Racial_Ethnic Exposure Index.mp4", "rb")
                     video_bytes = video_file.read()
                     st.video(video_bytes, format="video/mp4", start_time=0)
-                    
+
                 with st.expander("Source details"):
                     st.markdown(
                         "*People in Poverty*<br>"
@@ -346,12 +349,36 @@ def show_county_details_page():
 
                 st.markdown("##### Political participation")
 
-                get_metric(
-                    "Eligible population who turn out to vote",
-                    "proportion_voter",
-                    county_only_df,
-                    averages,
-                    "{:.0%}",
+                import plotly.graph_objects as go
+
+                fig = go.Figure(
+                    go.Indicator(
+                        mode="gauge+number+delta",
+                        value=round(
+                            county_only_df["proportion_voter"].values[0] * 100, 1
+                        ),
+                        number={"suffix": "%"},
+                        domain={"x": [0, 1], "y": [0, 1]},
+                        title={"text": "Eligible population who turn out to vote"},
+                        delta={
+                            "reference": round(averages["proportion_voter"] * 100, 1)
+                        },
+                        gauge={
+                            "axis": {"range": [None, 100]},
+                            "threshold": {
+                                "line": {"color": "red", "width": 1},
+                                "thickness": 0.75,
+                                "value": averages["proportion_voter"] * 100,
+                            },
+                        },
+                    )
+                )
+                fig.update_layout(margin=dict(b=0, l=0, r=0, t=0))
+                st.plotly_chart(fig)
+
+                st.markdown(
+                    '<div style="width: 100%; text-align: center; margin-bottom: 10px; margin-top: -30px"><i>Delta compared to national average</i></div>',
+                    unsafe_allow_html=True,
                 )
 
                 with st.expander("Source details"):
