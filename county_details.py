@@ -361,7 +361,9 @@ def show_county_details_page():
                         domain={"x": [0, 1], "y": [0, 1]},
                         title={"text": "Eligible population who turn out to vote"},
                         delta={
-                            "reference": round(averages["proportion_voter"] * 100, 1)
+                            "reference": round(averages["proportion_voter"] * 100, 1),
+                            "increasing": {"color": "green"},
+                            "decreasing": {"color": "red"}
                         },
                         gauge={
                             "axis": {"range": [None, 100]},
@@ -370,6 +372,7 @@ def show_county_details_page():
                                 "thickness": 0.75,
                                 "value": averages["proportion_voter"] * 100,
                             },
+                            "bar": {"color":"rgb(8, 48, 107)"},
                         },
                     )
                 )
