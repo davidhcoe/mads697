@@ -287,7 +287,7 @@ def show_county_details_page():
                         chart_df,
                         x="race",
                         y="value",
-                        title="Racial Exposure Index",
+                        title="Racial/Ethnic Exposure Index",
                         color_discrete_sequence=px.colors.sequential.Blues_r,
                         labels=dict(race="", value=""),
                     )
