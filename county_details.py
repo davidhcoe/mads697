@@ -4,6 +4,7 @@ import streamlit as st
 import pandas as pd
 import altair as alt
 import plotly.express as px
+import matplotlib.pyplot as plt 
 
 from utilities import (
     get_dataframe,
@@ -698,44 +699,83 @@ def show_county_details_page():
                     )
 
                 with col2:
-                    categories = [
-                        "preschool_enrollment_white",
-                        "preschool_enrollment_black",
-                        "preschool_enrollment_hispanic",
-                        "preschool_enrollment_indigenous",
-                        "preschool_enrollment_asian",
-                    ]
+#                     categories = [
+#                         "preschool_enrollment_white",
+#                         "preschool_enrollment_black",
+#                         "preschool_enrollment_hispanic",
+#                         "preschool_enrollment_indigenous",
+#                         "preschool_enrollment_asian",
+#                     ]
 
-                    category_names = {
-                        "preschool_enrollment_white": "White",
-                        "preschool_enrollment_black": "Black",
-                        "preschool_enrollment_indigenous": "Indigenous",
-                        "preschool_enrollment_asian": "Asian",
-                        "preschool_enrollment_hispanic": "Hispanic/Latino",
-                    }
+#                     category_names = {
+#                         "preschool_enrollment_white": "White",
+#                         "preschool_enrollment_black": "Black",
+#                         "preschool_enrollment_indigenous": "Indigenous",
+#                         "preschool_enrollment_asian": "Asian",
+#                         "preschool_enrollment_hispanic": "Hispanic/Latino",
+#                     }
 
-                    labels = []
-                    values = []
+#                     labels = []
+#                     values = []
+#                     for c in categories:
+#                         value = county_only_df[c].values[0]
 
-                    for c in categories:
-                        value = county_only_df[c].values[0]
+#                         if value > 0:
+#                             labels.append(category_names[c])
+#                             values.append(value)
 
-                        if value > 0:
-                            labels.append(category_names[c])
-                            values.append(value)
+#                     chart_df = pd.DataFrame({"race": labels, "value": values})
 
-                    chart_df = pd.DataFrame({"race": labels, "value": values})
+#                     fig = px.bar(
+#                         chart_df,
+#                         x="race",
+#                         y="value",
+#                         title="Proportion of PreK Students who Identify as a Given Race/Ethnicity",
+#                         color_discrete_sequence=px.colors.sequential.Blues_r,
+#                         labels=dict(race="", value=""),
+#                     )
 
-                    fig = px.bar(
-                        chart_df,
-                        x="race",
-                        y="value",
-                        title="Proportion of PreK Students who Identify as a Given Race/Ethnicity",
-                        color_discrete_sequence=px.colors.sequential.Blues_r,
-                        labels=dict(race="", value=""),
-                    )
+#                     st.plotly_chart(fig, use_container_width=False)
 
-                    st.plotly_chart(fig, use_container_width=False)
+                    
+                    under_5 = ['white_under_5',
+                               'black_under_5',
+                               'hispanic_under_5',
+                               'indigenous_under_5',
+                               'asian_under_5',
+                               ]
+                    preschool_enroll = ['preschool_enrollment_white', 'preschool_enrollment_black',
+                                        'preschool_enrollment_hispanic',
+                                        'preschool_enrollment_indigenous','preschool_enrollment_asian',
+                                         ]
+                    X = ['White','Black','Hispanic or Latino','Native American','Asian',]
+                    
+                    preschool=[]
+                    under5=[]
+                    for num in range(len(X)):
+                        preschool.append(county_only_df[preschool_enroll[num]].iloc[0]*100)
+                        under5.append(county_only_df[under_5[num]].iloc[0]*100)
+                    fig = plt.figure()
+                    X_axis = np.arange(len(X))
+                    plt.bar(X_axis - 0.2, preschool, 0.4, label = 'Enrolled in preschool',
+                            color='#08306B'
+                            )
+                    plt.bar(X_axis + 0.2, under5, 0.4, label = 'Under 5', color='grey')
+                    
+                    plt.xticks(X_axis, X)
+                    plt.xlabel("")
+                    plt.ylabel("Percent")
+                    
+
+                    plt.title("Under 5-Year-Olds vs. Preschool-Enrolled 3- and 4-Year-Olds by Race/Ethnicity")
+                    plt.legend()
+                    plt.show()
+                     
+                    st.pyplot(fig)
+
+
+
+                    
 
                 with st.expander("Source details"):
 
