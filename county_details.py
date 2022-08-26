@@ -12,6 +12,7 @@ from utilities import (
     get_metric,
     get_parameter,
     get_wiki_image,
+    get_population_chart,
     FIPS_PARAMETER,
 )
 
