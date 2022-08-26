@@ -603,8 +603,59 @@ def show_county_comparer_page(fips1, fips2):
                     "{0:,.1f}",
                 )
 
-                # fig = get_preschool_chart(county1_only_df)
-                # st.pyplot(fig)
+                # this chart could use some refactoring...
+                under_5 = [
+                    "white_under_5",
+                    "black_under_5",
+                    "hispanic_under_5",
+                    "indigenous_under_5",
+                    "asian_under_5",
+                ]
+                preschool_enroll = [
+                    "preschool_enrollment_white",
+                    "preschool_enrollment_black",
+                    "preschool_enrollment_hispanic",
+                    "preschool_enrollment_indigenous",
+                    "preschool_enrollment_asian",
+                ]
+                X = [
+                    "White",
+                    "Black",
+                    "Hispanic or Latino",
+                    "Native American",
+                    "Asian",
+                ]
+
+                preschool = []
+                under5 = []
+                for num in range(len(X)):
+                    preschool.append(
+                        county1_only_df[preschool_enroll[num]].iloc[0] * 100
+                    )
+                    under5.append(county1_only_df[under_5[num]].iloc[0] * 100)
+                fig = plt.figure()
+                X_axis = np.arange(len(X))
+
+                plt.bar(
+                    X_axis - 0.2,
+                    preschool,
+                    0.4,
+                    label="Enrolled in preschool",
+                    color="#08306B",
+                )
+                plt.bar(X_axis + 0.2, under5, 0.4, label="Under 5", color="grey")
+
+                plt.xticks(X_axis, X)
+                plt.xlabel("")
+                plt.ylabel("Percent")
+
+                plt.title(
+                    "Under 5-Year-Olds vs. Preschool-Enrolled 3- and 4-Year-Olds by Race/Ethnicity"
+                )
+                plt.legend()
+                plt.show()
+
+                st.pyplot(fig)
 
             with col2:
                 st.markdown(f"#### {name2}")
@@ -631,8 +682,59 @@ def show_county_comparer_page(fips1, fips2):
                     "{0:,.1f}",
                 )
 
-                # fig = get_preschool_chart(county2_only_df)
-                # st.pyplot(fig)
+                under_5 = [
+                    "white_under_5",
+                    "black_under_5",
+                    "hispanic_under_5",
+                    "indigenous_under_5",
+                    "asian_under_5",
+                ]
+
+                preschool_enroll = [
+                    "preschool_enrollment_white",
+                    "preschool_enrollment_black",
+                    "preschool_enrollment_hispanic",
+                    "preschool_enrollment_indigenous",
+                    "preschool_enrollment_asian",
+                ]
+                X = [
+                    "White",
+                    "Black",
+                    "Hispanic or Latino",
+                    "Native American",
+                    "Asian",
+                ]
+
+                preschool = []
+                under5 = []
+                for num in range(len(X)):
+                    preschool.append(
+                        county2_only_df[preschool_enroll[num]].iloc[0] * 100
+                    )
+                    under5.append(county2_only_df[under_5[num]].iloc[0] * 100)
+                fig = plt.figure()
+                X_axis = np.arange(len(X))
+
+                plt.bar(
+                    X_axis - 0.2,
+                    preschool,
+                    0.4,
+                    label="Enrolled in preschool",
+                    color="#08306B",
+                )
+                plt.bar(X_axis + 0.2, under5, 0.4, label="Under 5", color="grey")
+
+                plt.xticks(X_axis, X)
+                plt.xlabel("")
+                plt.ylabel("Percent")
+
+                plt.title(
+                    "Under 5-Year-Olds vs. Preschool-Enrolled 3- and 4-Year-Olds by Race/Ethnicity"
+                )
+                plt.legend()
+                plt.show()
+
+                st.pyplot(fig)
 
             with st.expander("Source details"):
 
