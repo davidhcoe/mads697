@@ -7,7 +7,7 @@ from utilities import (
     FIPS2_PARAMETER,
 )
 from county_details import show_county_details_page
-from counter_comparer import show_county_comparer_page
+from county_comparer import show_county_comparer_page
 from national import show_national_page
 from county_picker import show_county_picker_page
 

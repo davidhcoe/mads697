@@ -31,8 +31,6 @@ def show_county_comparer_page(fips1, fips2):
     """
     # build the main content for the report on the page
 
-    print(f"fips1={fips1} and fips2={fips2}")
-
     df, averages = get_dataframe()
 
     county1_only_df = df[df["FIPS"] == int(fips1)]
@@ -42,19 +40,6 @@ def show_county_comparer_page(fips1, fips2):
         name1 = county1_only_df.NAME.values[0]
         name2 = county2_only_df.NAME.values[0]
 
-        wiki_image1 = get_wiki_image(name1)
-        wiki_image2 = get_wiki_image(name2)
-
-        # if wiki_image != 0:
-        #     st.markdown(
-        #         "<style>.container {        display: flex;        align-items: center;        justify-content: center}      img {        max-width: 100%}      .image {        flex-basis: 40%}      .text {        font-size: 14px;        padding-left: 20px;}</style>",
-        #         unsafe_allow_html=True,
-        #     )
-        #     st.markdown(
-        #         f'<div class="container"><div class="image"><img src="{wiki_image}" alt="Wikipedia image of {name}"/></div><div class="text"><h1>{name}</h1><a href="#population">Population</a>  | <a href="#supportive-communities">Supportive Communities</a> | <a href="#strong-and-healthy-families">Strong and Healthy Families</a> | <a href="#opportunities-to-learn-and-earn">Opportunities to Learn and Earn</a></div>',
-        #         unsafe_allow_html=True,
-        #     )
-        # else:
         st.title(f"{name1} vs. {name2}")
         st.markdown(
             '<a href="#population">Population</a> | <a href="#supportive-communities">Supportive Communities</a> | <a href="#strong-and-healthy-families">Strong and Healthy Families</a> | <a href="#opportunities-to-learn-and-earn">Opportunities to Learn and Earn</a>',
