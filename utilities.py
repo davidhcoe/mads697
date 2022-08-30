@@ -5,9 +5,14 @@ import requests
 import json
 import numpy as np
 from typing import Any, Dict
+import plotly.express as px
+import plotly.graph_objects as go
+import matplotlib.pyplot as plt
 
 METRIC_PARAMETER = "metric"
 FIPS_PARAMETER = "fips"
+FIPS1_PARAMETER = "fips1"
+FIPS2_PARAMETER = "fips2"
 
 INTEGER_METRICS = [
     "population",
@@ -378,3 +383,399 @@ def get_county_details_url():
         url = "https://davidhcoe-mads697-main-1sf12v.streamlitapp.com/?fips="
 
     return url
+
+
+def get_population_chart(county_only_df):
+    # build the population sunburst
+    values = []
+
+    white_hispanic = county_only_df.iloc[0]["hispanic_or_latino_white_total"]
+    white = county_only_df.iloc[0]["white_total"] - white_hispanic
+    values.append(white)
+    values.append(white_hispanic)
+
+    black_hispanic = county_only_df.iloc[0]["hispanic_or_latino_black_total"]
+    black = county_only_df.iloc[0]["black_total"] - black_hispanic
+    values.append(black)
+    values.append(black_hispanic)
+
+    native_hispanic = county_only_df.iloc[0]["hispanic_or_latino_american_indian_total"]
+    native = county_only_df.iloc[0]["native_american_total"] - native_hispanic
+    values.append(native)
+    values.append(native_hispanic)
+
+    asian_hispanic = county_only_df.iloc[0]["hispanic_or_latino_asian_total"]
+    asian = county_only_df.iloc[0]["asian_total"] - asian_hispanic
+    values.append(asian)
+    values.append(asian_hispanic)
+
+    hawaiian_hispanic = county_only_df.iloc[0]["hispanic_or_latino_hawaiian_total"]
+    hawaiian = county_only_df.iloc[0]["hawaiian_total"] - hawaiian_hispanic
+    values.append(hawaiian)
+    values.append(hawaiian_hispanic)
+
+    other_hispanic = county_only_df.iloc[0]["hispanic_or_latino_some_other_race_total"]
+    other = county_only_df.iloc[0]["some_other_race_alone_total"] - other_hispanic
+    values.append(other)
+    values.append(other_hispanic)
+
+    two_or_more_hispanic = county_only_df.iloc[0][
+        "hispanic_or_latino_two_or_more_races_total"
+    ]
+    two_or_more = county_only_df.iloc[0]["two_more_races_total"] - two_or_more_hispanic
+    values.append(two_or_more)
+    values.append(two_or_more_hispanic)
+
+    data_dict = {
+        "Race": [
+            "White",
+            "White",
+            "Black",
+            "Black",
+            "Native American",
+            "Native American",
+            "Asian",
+            "Asian",
+            "Hawaiian",
+            "Hawaiian",
+            "Other",
+            "Other",
+            "Two or More",
+            "Two or More",
+        ],
+        "Ethnicity": [
+            # white
+            "Non Hispanic/Latino",
+            "Hispanic/Latino",
+            # black
+            "Non Hispanic/Latino",
+            "Hispanic/Latino",
+            # native american
+            "Non Hispanic/Latino",
+            "Hispanic/Latino",
+            # asian
+            "Non Hispanic/Latino",
+            "Hispanic/Latino",
+            # hawaiian
+            "Non Hispanic/Latino",
+            "Hispanic/Latino",
+            # other
+            "Non Hispanic/Latino",
+            "Hispanic/Latino",
+            # two or more
+            "Non Hispanic/Latino",
+            "Hispanic/Latino",
+        ],
+        "Population": values,
+    }
+
+    viz_df = pd.DataFrame(data_dict)
+
+    fig = px.sunburst(
+        viz_df,
+        path=["Race", "Ethnicity"],
+        values="Population",
+        color="Race",
+        color_discrete_sequence=px.colors.sequential.Blues_r,
+    )
+
+    fig.update_layout(margin=dict(b=0, l=0, r=0, t=40))
+
+    return fig
+
+
+def get_ethnic_exposure_index(county_only_df):
+    categories = [
+        "hispanic_or_latino_exposure",
+        "white_exposure",
+        "black_exposure",
+        "native_american_exposure",
+        "asian_exposure",
+        "hawaiian_exposure",
+        "some_other_race_alone_exposure",
+        "two_more_races_exposure",
+    ]
+
+    category_names = {
+        "white_exposure": "White",
+        "black_exposure": "Black",
+        "native_american_exposure": "Native American",
+        "asian_exposure": "Asian",
+        "hispanic_or_latino_exposure": "Hispanic/Latino",
+        "hawaiian_exposure": "Hawaiian",
+        "some_other_race_alone_exposure": "Other race",
+        "two_more_races_exposure": "Two or more races",
+    }
+
+    labels = []
+    values = []
+
+    for c in categories:
+        value = county_only_df[c].values[0]
+
+        if value > 0:
+            labels.append(category_names[c])
+            values.append(value)
+
+    chart_df = pd.DataFrame({"race": labels, "value": values})
+
+    fig = px.bar(
+        chart_df,
+        x="race",
+        y="value",
+        title="Racial/Ethnic Exposure Index",
+        color_discrete_sequence=px.colors.sequential.Blues_r,
+        labels=dict(race="", value=""),
+    )
+
+    return fig
+
+
+def get_political_participation_chart(county_only_df, averages):
+    fig = go.Figure(
+        go.Indicator(
+            mode="gauge+number+delta",
+            value=round(county_only_df["proportion_voter"].values[0] * 100, 1),
+            number={"suffix": "%"},
+            domain={"x": [0, 1], "y": [0, 1]},
+            title={"text": "Eligible population who turn out to vote"},
+            delta={
+                "reference": round(averages["proportion_voter"] * 100, 1),
+                "increasing": {"color": "green"},
+                "decreasing": {"color": "red"},
+            },
+            gauge={
+                "axis": {"range": [None, 100]},
+                "threshold": {
+                    "line": {"color": "red", "width": 1},
+                    "thickness": 0.75,
+                    "value": averages["proportion_voter"] * 100,
+                },
+                "bar": {"color": "rgb(8, 48, 107)"},
+            },
+        )
+    )
+    fig.update_layout(margin=dict(b=0, l=0, r=0, t=0))
+
+    return fig
+
+
+def get_median_income_chart(county_only_df):
+    categories = [
+        "median_family_income_white",
+        "median_family_income_black",
+        "median_family_income_indigenous",
+        "median_family_income_asian",
+        "median_family_income_hispanic",
+    ]
+
+    category_names = {
+        "median_family_income_white": "White",
+        "median_family_income_black": "Black",
+        "median_family_income_indigenous": "Native American",
+        "median_family_income_asian": "Asian",
+        "median_family_income_hispanic": "Hispanic/Latino",
+    }
+
+    labels = []
+    values = []
+
+    for c in categories:
+        value = county_only_df[c].values[0]
+
+        if value > 0:
+            labels.append(category_names[c])
+            values.append(value)
+
+    chart_df = pd.DataFrame({"race": labels, "value": values})
+
+    fig = px.bar(
+        chart_df,
+        x="race",
+        y="value",
+        title="Median Income by Race/Ethnicity",
+        color_discrete_sequence=px.colors.sequential.Blues_r,
+        labels=dict(race="", value=""),
+    )
+
+    return fig
+
+
+def get_housing_instability_chart(county_only_df, averages):
+    fig = go.Figure(
+        go.Indicator(
+            mode="gauge+number+delta",
+            value=round(county_only_df["proportion_homeless"].values[0] * 100, 1),
+            number={"suffix": "%"},
+            domain={"x": [0, 1], "y": [0, 1]},
+            title={"text": "Proportion Homeless Students"},
+            delta={
+                "reference": round(averages["proportion_homeless"] * 100, 1),
+                "increasing": {"color": "red"},
+                "decreasing": {"color": "green"},
+            },
+            gauge={
+                "axis": {"range": [None, 100]},
+                "threshold": {
+                    "line": {"color": "red", "width": 1},
+                    "thickness": 0.75,
+                    "value": averages["proportion_homeless"] * 100,
+                },
+                "bar": {"color": "rgb(8, 48, 107)"},
+            },
+        )
+    )
+    fig.update_layout(margin=dict(b=0, l=0, r=0, t=0))
+
+    return fig
+
+
+def get_birthrate_chart(county_only_df):
+    categories = [
+        "Not Hispanic or Latino_low_birth_rate",
+        "Hispanic or Latino_low_birth_rate",
+        "Unknown or Not Stated_low_birth_rate",
+        "Black or African American_low_birth_rate",
+        "White_low_birth_rate",
+        "Asian_low_birth_rate",
+        "More than one race_low_birth_rate",
+        "American Indian or Alaska Native_low_birth_rate",
+        "Native Hawaiian or Other Pacific Islander_low_birth_rate",
+    ]
+
+    category_names = {
+        "White_low_birth_rate": "White",
+        "Black or African American_low_birth_rate": "Black",
+        "American Indian or Alaska Native_low_birth_rate": "Indiginous",
+        "Asian_low_birth_rate": "Asian",
+        "Hispanic or Latino_low_birth_rate": "Hispanic/Latino",
+        "Not Hispanic or Latino_low_birth_rate": "Non Hispanic/Latino",
+        "Unknown or Not Stated_low_birth_rate": "Unknown/Not stated",
+        "More than one race_low_birth_rate": "More than 1 race",
+        "Native Hawaiian or Other Pacific Islander_low_birth_rate": "Hawaiian/Islander",
+    }
+
+    labels = []
+    values = []
+
+    for c in categories:
+        value = county_only_df[c].values[0]
+
+        if value > 0:
+            labels.append(category_names[c])
+            values.append(value)
+
+    # not all counties have data
+    if len(values) > 0:
+        chart_df = pd.DataFrame({"race": labels, "value": values})
+
+        fig = px.bar(
+            chart_df,
+            x="race",
+            y="value",
+            color_discrete_sequence=px.colors.sequential.Blues_r,
+            title="Low Birth Rate by Race/Ethnicity",
+            labels=dict(race="", value=""),
+        )
+
+        return fig
+
+    return None
+
+
+def get_employment_chart(county_only_df):
+    categories = [
+        "white_employed_16_64",
+        "black_employed_16_64",
+        "american_indian_employed_16_64",
+        "asian_employed_16_64",
+        "some_other_race_alone_employed_16_64",
+        "two_or_more_race_employed_16_64",
+        "hispanic_or_latino_employed_16_64",
+    ]
+
+    category_names = {
+        "white_employed_16_64": "White",
+        "black_employed_16_64": "Black",
+        "american_indian_employed_16_64": "Native American",
+        "asian_employed_16_64": "Asian",
+        "hispanic_or_latino_employed_16_64": "Hispanic/Latino",
+        "some_other_race_alone_employed_16_64": "Other race",
+        "two_or_more_race_employed_16_64": "Two or more races",
+    }
+
+    labels = []
+    values = []
+
+    for c in categories:
+        value = county_only_df[c].values[0]
+
+        if value > 0:
+            labels.append(category_names[c])
+            values.append(value)
+
+    chart_df = pd.DataFrame({"race": labels, "value": values})
+
+    fig = px.bar(
+        chart_df,
+        x="race",
+        y="value",
+        title="Employment by Race, Age 16-64",
+        color_discrete_sequence=px.colors.sequential.Blues_r,
+        labels=dict(race="", value=""),
+    )
+
+    return fig
+
+
+def get_preschool_chart(county_only_df):
+    under_5 = [
+        "white_under_5",
+        "black_under_5",
+        "hispanic_under_5",
+        "indigenous_under_5",
+        "asian_under_5",
+    ]
+    preschool_enroll = [
+        "preschool_enrollment_white",
+        "preschool_enrollment_black",
+        "preschool_enrollment_hispanic",
+        "preschool_enrollment_indigenous",
+        "preschool_enrollment_asian",
+    ]
+    X = [
+        "White",
+        "Black",
+        "Hispanic or Latino",
+        "Native American",
+        "Asian",
+    ]
+
+    preschool = []
+    under5 = []
+    for num in range(len(X)):
+        preschool.append(county_only_df[preschool_enroll[num]].iloc[0] * 100)
+        under5.append(county_only_df[under_5[num]].iloc[0] * 100)
+    fig = plt.figure()
+    X_axis = np.arange(len(X))
+
+    plt.bar(
+        X_axis - 0.2,
+        preschool,
+        0.4,
+        label="Enrolled in preschool",
+        color="#08306B",
+    )
+    plt.bar(X_axis + 0.2, under5, 0.4, label="Under 5", color="grey")
+
+    plt.xticks(X_axis, X)
+    plt.xlabel("")
+    plt.ylabel("Percent")
+
+    plt.title(
+        "Under 5-Year-Olds vs. Preschool-Enrolled 3- and 4-Year-Olds by Race/Ethnicity"
+    )
+    plt.legend()
+    plt.show()
+
+    return fig
